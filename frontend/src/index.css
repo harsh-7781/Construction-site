@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* ── Base ─────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: #020617;
+}
+
+/* ── Mobile Table Scroll ──────────────────────────────── */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table {
+  min-width: 600px;
+}
+
+/* ── Touch Targets ────────────────────────────────────── */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ── Input Mobile Fix ─────────────────────────────────── */
+input[type="date"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="text"],
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+/* ── Prevent zoom on input focus (iOS) ───────────────── */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Card Grid responsive ─────────────────────────────── */
+.responsive-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.responsive-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── Safe area for iPhone notch ───────────────────────── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
