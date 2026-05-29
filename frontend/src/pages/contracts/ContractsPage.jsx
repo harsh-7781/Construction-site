@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import {
   FileSignature, Plus, Search, Filter, Download,
-  Eye, Edit3, Send, Copy,  CheckCircle2,
-  AlertCircle, XCircle, ArrowLeft, Save,
+  Eye, Edit3, Send, Copy, CheckCircle2,
+   AlertCircle, XCircle, ArrowLeft, Save,
   Building2, User, Calendar, Hash, Shield,
   ChevronRight, FileText, Pen, Check,
-  IndianRupee, MapPin, 
+  IndianRupee, MapPin,
   BookOpen, Lock, Unlock
 } from 'lucide-react'
+import { generateContractPDF } from '../../utils/pdfExport'
 
 // ── Mock Data ──────────────────────────────────────────────
 const contracts = [
@@ -28,6 +29,8 @@ const contracts = [
     paymentTerms: '30-40-30',
     clauses: 18,
     site: 'Worli, Mumbai',
+    penalty: '0.5',
+    dpl: '12',
   },
   {
     id: 'CON-1020',
@@ -46,6 +49,8 @@ const contracts = [
     paymentTerms: '40-30-30',
     clauses: 14,
     site: 'Dadar, Mumbai',
+    penalty: '0.5',
+    dpl: '12',
   },
   {
     id: 'CON-1019',
@@ -64,6 +69,8 @@ const contracts = [
     paymentTerms: '20-40-40',
     clauses: 16,
     site: 'Powai, Mumbai',
+    penalty: '0.5',
+    dpl: '12',
   },
   {
     id: 'CON-1018',
@@ -82,6 +89,8 @@ const contracts = [
     paymentTerms: '30-40-30',
     clauses: 15,
     site: 'Lower Parel, Mumbai',
+    penalty: '0.5',
+    dpl: '12',
   },
   {
     id: 'CON-1017',
@@ -100,6 +109,8 @@ const contracts = [
     paymentTerms: '50-30-20',
     clauses: 12,
     site: 'Bandra, Mumbai',
+    penalty: '0.5',
+    dpl: '12',
   },
   {
     id: 'CON-1016',
@@ -118,6 +129,8 @@ const contracts = [
     paymentTerms: '50-50',
     clauses: 10,
     site: 'SEEPZ, Mumbai',
+    penalty: '0.5',
+    dpl: '12',
   },
 ]
 
@@ -179,18 +192,18 @@ const contractTemplates = [
 ]
 
 const standardClauses = [
-  { id:1,  category:'Scope',      title:'Scope of Work',              required:true,  included:true  },
-  { id:2,  category:'Payment',    title:'Payment Terms & Schedule',    required:true,  included:true  },
-  { id:3,  category:'Timeline',   title:'Project Timeline & Milestones',required:true, included:true  },
-  { id:4,  category:'Quality',    title:'Quality Standards & Testing', required:true,  included:true  },
-  { id:5,  category:'Safety',     title:'Health & Safety Compliance',  required:true,  included:true  },
-  { id:6,  category:'Material',   title:'Material Supply Responsibility',required:false,included:true  },
-  { id:7,  category:'Changes',    title:'Variation & Change Orders',   required:false, included:true  },
-  { id:8,  category:'Penalty',    title:'Delay Penalty Clause',        required:false, included:true  },
-  { id:9,  category:'Defect',     title:'Defect Liability Period',     required:false, included:true  },
-  { id:10, category:'Insurance',  title:'Insurance & Indemnity',       required:false, included:false },
-  { id:11, category:'Dispute',    title:'Dispute Resolution',          required:false, included:false },
-  { id:12, category:'Termination',title:'Termination Conditions',      required:false, included:false },
+  { id:1,  category:'Scope',      title:'Scope of Work',               required:true,  included:true  },
+  { id:2,  category:'Payment',    title:'Payment Terms & Schedule',     required:true,  included:true  },
+  { id:3,  category:'Timeline',   title:'Project Timeline & Milestones',required:true,  included:true  },
+  { id:4,  category:'Quality',    title:'Quality Standards & Testing',  required:true,  included:true  },
+  { id:5,  category:'Safety',     title:'Health & Safety Compliance',   required:true,  included:true  },
+  { id:6,  category:'Material',   title:'Material Supply Responsibility',required:false, included:true  },
+  { id:7,  category:'Changes',    title:'Variation & Change Orders',    required:false, included:true  },
+  { id:8,  category:'Penalty',    title:'Delay Penalty Clause',         required:false, included:true  },
+  { id:9,  category:'Defect',     title:'Defect Liability Period',      required:false, included:true  },
+  { id:10, category:'Insurance',  title:'Insurance & Indemnity',        required:false, included:false },
+  { id:11, category:'Dispute',    title:'Dispute Resolution',           required:false, included:false },
+  { id:12, category:'Termination',title:'Termination Conditions',       required:false, included:false },
 ]
 
 const clients = [
@@ -235,7 +248,7 @@ const ServiceTag = ({ service }) => {
 function ContractBuilder({ template, onBack }) {
   const [step,         setStep]         = useState(1)
   const [client,       setClient]       = useState('Lodha Group')
-  const [project,      setProject]      = useState('')
+  const [projectName,  setProjectName]  = useState('')
   const [contractType, setContractType] = useState(template?.service || 'Turnkey')
   const [value,        setValue]        = useState('')
   const [startDate,    setStartDate]    = useState('')
@@ -262,6 +275,25 @@ function ContractBuilder({ template, onBack }) {
     { n:5, label:'Signature' },
   ]
 
+  const handleDownloadPDF = () => {
+    generateContractPDF({
+      id:           'CON-DRAFT',
+      title:        contractType + ' Agreement',
+      client,
+      project:      projectName,
+      type:         contractType,
+      value:        value ? `₹${Number(value).toLocaleString('en-IN')}` : '—',
+      paymentTerms: payTerms,
+      penalty,
+      dpl,
+      signed,
+      signedDate:   signed ? new Date().toLocaleDateString('en-IN') : null,
+      clauses:      includedClauses,
+      site:         '—',
+      service:      contractType,
+    })
+  }
+
   return (
     <div className="space-y-6">
 
@@ -275,12 +307,15 @@ function ContractBuilder({ template, onBack }) {
             {template ? `New Contract — ${template.name}` : 'New Contract'}
           </h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={handleDownloadPDF}
+            className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1 transition"
+          >
+            <Download size={13}/> Download PDF
+          </button>
           <button className="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg flex items-center gap-1">
             <Save size={13}/> Save Draft
-          </button>
-          <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
-            <Download size={13}/> Download PDF
           </button>
         </div>
       </div>
@@ -323,10 +358,10 @@ function ContractBuilder({ template, onBack }) {
             </h2>
             <div className="space-y-3">
               {[
-                { label:'Company Name', value:'ConstructOS Pvt Ltd',           readOnly:true  },
-                { label:'GSTIN',        value:'27AABCU9603R1ZX',               readOnly:true  },
-                { label:'Address',      value:'Office 402, BKC, Mumbai 400051',readOnly:true  },
-                { label:'Represented By',value:'Rajesh Mehta (CEO)',           readOnly:true  },
+                { label:'Company Name',   value:'ConstructOS Pvt Ltd'            },
+                { label:'GSTIN',          value:'27AABCU9603R1ZX'                },
+                { label:'Address',        value:'Office 402, BKC, Mumbai 400051' },
+                { label:'Represented By', value:'Rajesh Mehta (CEO)'             },
               ].map((f,i) => (
                 <div key={i}>
                   <label className="block text-xs text-slate-500 mb-1">{f.label}</label>
@@ -346,25 +381,35 @@ function ContractBuilder({ template, onBack }) {
             <div className="space-y-3">
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Client Name</label>
-                <select value={client} onChange={e=>setClient(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                  {clients.map(c=><option key={c}>{c}</option>)}
+                <select
+                  value={client}
+                  onChange={e => setClient(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                >
+                  {clients.map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Contact Person</label>
-                <input placeholder="Full name"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                <input
+                  placeholder="Full name"
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Client Address</label>
-                <textarea rows={2} placeholder="Registered office address"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none"/>
+                <textarea
+                  rows={2}
+                  placeholder="Registered office address"
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Client GSTIN</label>
-                <input placeholder="GSTIN number"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                <input
+                  placeholder="GSTIN number"
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
             </div>
           </div>
@@ -374,55 +419,79 @@ function ContractBuilder({ template, onBack }) {
             <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
               <Hash size={15} className="text-teal-400"/> Project Details
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="sm:col-span-2">
                 <label className="block text-xs text-slate-400 mb-1.5">Project Name</label>
-                <input value={project} onChange={e=>setProject(e.target.value)}
+                <input
+                  value={projectName}
+                  onChange={e => setProjectName(e.target.value)}
                   placeholder="Project name"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Contract Type</label>
-                <select value={contractType} onChange={e=>setContractType(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                  {['Turnkey','Labour + Material','Labour Only','Consultancy','Design Only'].map(t=>
-                    <option key={t}>{t}</option>)}
+                <select
+                  value={contractType}
+                  onChange={e => setContractType(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                >
+                  {['Turnkey','Labour + Material','Labour Only','Consultancy','Design Only'].map(t =>
+                    <option key={t}>{t}</option>
+                  )}
                 </select>
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Contract Value (₹)</label>
-                <input type="number" value={value} onChange={e=>setValue(e.target.value)}
+                <input
+                  type="number"
+                  value={value}
+                  onChange={e => setValue(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Start Date</label>
-                <input type="date" value={startDate} onChange={e=>setStartDate(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={e => setStartDate(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">End Date</label>
-                <input type="date" value={endDate} onChange={e=>setEndDate(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={e => setEndDate(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Site Location</label>
-                <input placeholder="Site address"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                <input
+                  placeholder="Site address"
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Service Type</label>
                 <select className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                  {['Civil','Interior','MEP','Renovation','Structural','Architecture'].map(s=>
-                    <option key={s}>{s}</option>)}
+                  {['Civil','Interior','MEP','Renovation','Structural','Architecture'].map(s =>
+                    <option key={s}>{s}</option>
+                  )}
                 </select>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-2 flex justify-end">
-            <button onClick={() => setStep(2)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2">
+            <button
+              onClick={() => setStep(2)}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2"
+            >
               Next — Terms <ChevronRight size={14}/>
             </button>
           </div>
@@ -444,12 +513,15 @@ function ContractBuilder({ template, onBack }) {
                   <label className="block text-xs text-slate-400 mb-2">Payment Structure</label>
                   <div className="grid grid-cols-2 gap-2">
                     {['30-40-30','40-30-30','50-30-20','20-40-40','50-50','100% on completion'].map(t => (
-                      <button key={t} onClick={() => setPayTerms(t)}
+                      <button
+                        key={t}
+                        onClick={() => setPayTerms(t)}
                         className={`px-3 py-2 rounded-lg text-xs font-medium border transition ${
                           payTerms === t
                             ? 'border-blue-500 bg-blue-600/10 text-blue-400'
                             : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
-                        }`}>
+                        }`}
+                      >
                         {t}
                       </button>
                     ))}
@@ -458,21 +530,27 @@ function ContractBuilder({ template, onBack }) {
                 <div>
                   <label className="block text-xs text-slate-400 mb-1.5">Payment Method</label>
                   <select className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                    {['Bank Transfer (NEFT/RTGS)','Cheque','Online Payment','Cash (up to ₹2L)'].map(m=>
-                      <option key={m}>{m}</option>)}
+                    {['Bank Transfer (NEFT/RTGS)','Cheque','Online Payment','Cash (up to ₹2L)'].map(m =>
+                      <option key={m}>{m}</option>
+                    )}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-slate-400 mb-1.5">Payment Due (days after invoice)</label>
                   <select className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                    {['7 days','15 days','30 days','45 days','60 days'].map(d=>
-                      <option key={d}>{d}</option>)}
+                    {['7 days','15 days','30 days','45 days','60 days'].map(d =>
+                      <option key={d}>{d}</option>
+                    )}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-slate-400 mb-1.5">Late Payment Interest (%/month)</label>
-                  <input type="number" placeholder="1.5" defaultValue="1.5"
-                    className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                  <input
+                    type="number"
+                    placeholder="1.5"
+                    defaultValue="1.5"
+                    className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                  />
                 </div>
               </div>
             </div>
@@ -484,10 +562,14 @@ function ContractBuilder({ template, onBack }) {
               </h2>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">Delay Penalty (% of contract value per week)</label>
+                  <label className="block text-xs text-slate-400 mb-1.5">Delay Penalty (% per week)</label>
                   <div className="flex items-center gap-2">
-                    <input type="number" value={penalty} onChange={e=>setPenalty(e.target.value)}
-                      className="w-24 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                    <input
+                      type="number"
+                      value={penalty}
+                      onChange={e => setPenalty(e.target.value)}
+                      className="w-24 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                    />
                     <span className="text-slate-400 text-sm">% per week</span>
                   </div>
                   <p className="text-xs text-slate-600 mt-1">Max cap: 10% of contract value</p>
@@ -495,21 +577,25 @@ function ContractBuilder({ template, onBack }) {
                 <div>
                   <label className="block text-xs text-slate-400 mb-1.5">Defect Liability Period (months)</label>
                   <div className="flex items-center gap-2">
-                    <input type="number" value={dpl} onChange={e=>setDpl(e.target.value)}
-                      className="w-24 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                    <input
+                      type="number"
+                      value={dpl}
+                      onChange={e => setDpl(e.target.value)}
+                      className="w-24 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                    />
                     <span className="text-slate-400 text-sm">months</span>
                   </div>
                 </div>
                 <div>
                   <label className="block text-xs text-slate-400 mb-1.5">Performance Security (%)</label>
                   <select className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                    {['None','2.5%','5%','10%'].map(p=><option key={p}>{p}</option>)}
+                    {['None','2.5%','5%','10%'].map(p => <option key={p}>{p}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-slate-400 mb-1.5">Retention Amount (%)</label>
                   <select className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                    {['None','2.5%','5%','10%'].map(r=><option key={r}>{r}</option>)}
+                    {['None','2.5%','5%','10%'].map(r => <option key={r}>{r}</option>)}
                   </select>
                 </div>
               </div>
@@ -520,19 +606,25 @@ function ContractBuilder({ template, onBack }) {
               <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
                 <BookOpen size={15} className="text-amber-400"/> Special Conditions
               </h2>
-              <textarea rows={5}
+              <textarea
+                rows={5}
                 placeholder={`Enter any special conditions, exclusions or additional terms...\n\nExample:\n- All electrical work to comply with IS 732 standards\n- Client to provide unobstructed site access\n- Force majeure clause applicable for acts of God`}
-                className="w-full bg-slate-800 border border-slate-700 text-slate-300 placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none"/>
+                className="w-full bg-slate-800 border border-slate-700 text-slate-300 placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none"
+              />
             </div>
           </div>
 
           <div className="flex justify-between">
-            <button onClick={() => setStep(1)}
-              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg">
+            <button
+              onClick={() => setStep(1)}
+              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg"
+            >
               ← Back
             </button>
-            <button onClick={() => setStep(3)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2">
+            <button
+              onClick={() => setStep(3)}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2"
+            >
               Next — Clauses <ChevronRight size={14}/>
             </button>
           </div>
@@ -551,12 +643,15 @@ function ContractBuilder({ template, onBack }) {
             </div>
             <div className="divide-y divide-slate-800">
               {clauses.map(c => (
-                <div key={c.id} className={`flex items-center justify-between px-5 py-4 ${
-                  c.included ? '' : 'opacity-50'
-                }`}>
+                <div
+                  key={c.id}
+                  className={`flex items-center justify-between px-5 py-4 ${c.included ? '' : 'opacity-50'}`}
+                >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
-                      c.included ? 'bg-blue-600/20 text-blue-400 border border-blue-800' : 'bg-slate-800 text-slate-600 border border-slate-700'
+                      c.included
+                        ? 'bg-blue-600/20 text-blue-400 border border-blue-800'
+                        : 'bg-slate-800 text-slate-600 border border-slate-700'
                     }`}>
                       {c.id}
                     </div>
@@ -576,9 +671,7 @@ function ContractBuilder({ template, onBack }) {
                     onClick={() => toggleClause(c.id)}
                     disabled={c.required}
                     className={`w-8 h-8 rounded-lg flex items-center justify-center transition ${
-                      c.required
-                        ? 'cursor-not-allowed opacity-50'
-                        : 'cursor-pointer hover:scale-110'
+                      c.required ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-110'
                     } ${
                       c.included
                         ? 'bg-green-600/20 border border-green-800 text-green-400'
@@ -593,12 +686,16 @@ function ContractBuilder({ template, onBack }) {
           </div>
 
           <div className="flex justify-between">
-            <button onClick={() => setStep(2)}
-              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg">
+            <button
+              onClick={() => setStep(2)}
+              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg"
+            >
               ← Back
             </button>
-            <button onClick={() => setStep(4)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2">
+            <button
+              onClick={() => setStep(4)}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2"
+            >
               Next — Review <ChevronRight size={14}/>
             </button>
           </div>
@@ -608,9 +705,8 @@ function ContractBuilder({ template, onBack }) {
       {/* ── STEP 4: REVIEW ── */}
       {step === 4 && (
         <div className="space-y-4">
-
-          {/* Contract Preview */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+
             {/* Contract Header */}
             <div className="text-center mb-6 pb-6 border-b border-slate-700">
               <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center mx-auto mb-3">
@@ -618,11 +714,13 @@ function ContractBuilder({ template, onBack }) {
               </div>
               <h2 className="text-lg font-bold text-white">Construction Agreement</h2>
               <p className="text-slate-400 text-sm mt-1">ConstructOS Pvt Ltd</p>
-              <p className="text-slate-500 text-xs mt-0.5">Draft · Generated {new Date().toLocaleDateString('en-IN')}</p>
+              <p className="text-slate-500 text-xs mt-0.5">
+                Draft · Generated {new Date().toLocaleDateString('en-IN')}
+              </p>
             </div>
 
             {/* Parties */}
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
               <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-800">
                 <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider">Party A (Contractor)</p>
                 <p className="text-sm font-semibold text-white">ConstructOS Pvt Ltd</p>
@@ -636,18 +734,18 @@ function ContractBuilder({ template, onBack }) {
               </div>
             </div>
 
-            {/* Key Terms Summary */}
+            {/* Key Terms */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
               {[
-                { label:'Contract Type',   value: contractType         },
-                { label:'Contract Value',  value: value ? `₹${Number(value).toLocaleString('en-IN')}` : 'TBD' },
-                { label:'Payment Terms',   value: payTerms             },
-                { label:'Delay Penalty',   value: `${penalty}% / week` },
-                { label:'Start Date',      value: startDate || 'TBD'   },
-                { label:'End Date',        value: endDate   || 'TBD'   },
-                { label:'DLP Period',      value: `${dpl} months`      },
-                { label:'Clauses',         value: `${includedClauses.length} included` },
-              ].map((t,i) => (
+                { label:'Contract Type',  value: contractType         },
+                { label:'Contract Value', value: value ? `₹${Number(value).toLocaleString('en-IN')}` : 'TBD' },
+                { label:'Payment Terms',  value: payTerms             },
+                { label:'Delay Penalty',  value: `${penalty}% / week` },
+                { label:'Start Date',     value: startDate || 'TBD'   },
+                { label:'End Date',       value: endDate   || 'TBD'   },
+                { label:'DLP Period',     value: `${dpl} months`      },
+                { label:'Clauses',        value: `${includedClauses.length} included` },
+              ].map((t, i) => (
                 <div key={i} className="bg-slate-800/50 rounded-lg p-3 border border-slate-800">
                   <p className="text-xs text-slate-500">{t.label}</p>
                   <p className="text-sm font-medium text-white mt-0.5">{t.value}</p>
@@ -660,11 +758,11 @@ function ContractBuilder({ template, onBack }) {
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
                 Included Clauses
               </p>
-              <div className="grid grid-cols-2 gap-2">
-                {includedClauses.map((c,i) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {includedClauses.map((c, i) => (
                   <div key={c.id} className="flex items-center gap-2 text-xs text-slate-400">
                     <span className="w-5 h-5 rounded bg-blue-600/20 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0">
-                      {i+1}
+                      {i + 1}
                     </span>
                     {c.title}
                   </div>
@@ -674,16 +772,23 @@ function ContractBuilder({ template, onBack }) {
           </div>
 
           <div className="flex justify-between">
-            <button onClick={() => setStep(3)}
-              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg">
+            <button
+              onClick={() => setStep(3)}
+              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg"
+            >
               ← Back
             </button>
             <div className="flex gap-2">
-              <button className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-4 py-2.5 rounded-lg flex items-center gap-2">
+              <button
+                onClick={handleDownloadPDF}
+                className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2.5 rounded-lg flex items-center gap-2"
+              >
                 <Download size={14}/> Download PDF
               </button>
-              <button onClick={() => setStep(5)}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2">
+              <button
+                onClick={() => setStep(5)}
+                className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-6 py-2.5 rounded-lg flex items-center gap-2"
+              >
                 Proceed to Sign <ChevronRight size={14}/>
               </button>
             </div>
@@ -701,13 +806,18 @@ function ContractBuilder({ template, onBack }) {
               <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
                 <Pen size={15} className="text-blue-400"/> Party A Signature
               </h2>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 text-center mb-4 min-h-[120px] flex flex-col items-center justify-center">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 text-center mb-4 min-h-30 flex flex-col items-center justify-center">
                 {signed ? (
                   <>
-                    <p className="text-2xl text-blue-400 font-semibold italic" style={{ fontFamily:'cursive' }}>
+                    <p
+                      className="text-2xl text-blue-400 font-semibold italic"
+                      style={{ fontFamily: 'cursive' }}
+                    >
                       Rajesh Mehta
                     </p>
-                    <p className="text-xs text-slate-500 mt-2">Digitally signed · {new Date().toLocaleDateString('en-IN')}</p>
+                    <p className="text-xs text-slate-500 mt-2">
+                      Digitally signed · {new Date().toLocaleDateString('en-IN')}
+                    </p>
                   </>
                 ) : (
                   <p className="text-slate-600 text-sm">Click below to sign</p>
@@ -721,7 +831,10 @@ function ContractBuilder({ template, onBack }) {
                     : 'bg-blue-600 hover:bg-blue-700 text-white'
                 }`}
               >
-                {signed ? <><CheckCircle2 size={15}/> Signed</> : <><Pen size={15}/> Sign as Rajesh Mehta</>}
+                {signed
+                  ? <><CheckCircle2 size={15}/> Signed</>
+                  : <><Pen size={15}/> Sign as Rajesh Mehta</>
+                }
               </button>
               <p className="text-xs text-slate-500 text-center mt-2">
                 By signing you agree to all terms and conditions
@@ -733,7 +846,7 @@ function ContractBuilder({ template, onBack }) {
               <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
                 <Pen size={15} className="text-purple-400"/> Party B Signature
               </h2>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 text-center mb-4 min-h-[120px] flex flex-col items-center justify-center">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 text-center mb-4 min-h-30 flex flex-col items-center justify-center">
                 <p className="text-slate-600 text-sm">Awaiting client signature</p>
                 <p className="text-xs text-slate-600 mt-1">Signature request will be sent via email</p>
               </div>
@@ -748,7 +861,7 @@ function ContractBuilder({ template, onBack }) {
 
           {/* Finalize */}
           {signed && (
-            <div className="bg-green-900/20 border border-green-900 rounded-xl p-5 flex items-center justify-between">
+            <div className="bg-green-900/20 border border-green-900 rounded-xl p-5 flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <CheckCircle2 size={20} className="text-green-400"/>
                 <div>
@@ -757,8 +870,11 @@ function ContractBuilder({ template, onBack }) {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-3 py-2 rounded-lg flex items-center gap-1 hover:bg-slate-700 transition">
-                  <Download size={13}/> Download
+                <button
+                  onClick={handleDownloadPDF}
+                  className="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-3 py-2 rounded-lg flex items-center gap-1 hover:bg-slate-700 transition"
+                >
+                  <Download size={13}/> Download PDF
                 </button>
                 <button className="text-xs bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-1">
                   <Send size={13}/> Send to Client
@@ -768,8 +884,10 @@ function ContractBuilder({ template, onBack }) {
           )}
 
           <div className="flex justify-between">
-            <button onClick={() => setStep(4)}
-              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg">
+            <button
+              onClick={() => setStep(4)}
+              className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm px-6 py-2.5 rounded-lg"
+            >
               ← Back
             </button>
           </div>
@@ -781,18 +899,18 @@ function ContractBuilder({ template, onBack }) {
 
 // ── Main Component ─────────────────────────────────────────
 export default function ContractsPage() {
-  const [view,          setView]          = useState('list')
-  const [activeTab,     setActiveTab]     = useState('contracts')
+  const [view,             setView]             = useState('list')
+  const [activeTab,        setActiveTab]        = useState('contracts')
   const [selectedTemplate, setSelectedTemplate] = useState(null)
-  const [search,        setSearch]        = useState('')
+  const [search,           setSearch]           = useState('')
 
   if (view === 'builder') {
     return <ContractBuilder template={selectedTemplate} onBack={() => setView('list')} />
   }
 
   const filtered = contracts.filter(c =>
-    c.client.toLowerCase().includes(search.toLowerCase()) ||
-    c.title.toLowerCase().includes(search.toLowerCase()) ||
+    c.client.toLowerCase().includes(search.toLowerCase())  ||
+    c.title.toLowerCase().includes(search.toLowerCase())   ||
     c.project.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -805,8 +923,10 @@ export default function ContractsPage() {
           <h1 className="text-xl font-bold text-white">Contracts</h1>
           <p className="text-slate-400 text-sm mt-0.5">Contract management & e-signatures</p>
         </div>
-        <button onClick={() => { setSelectedTemplate(null); setView('builder') }}
-          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
+        <button
+          onClick={() => { setSelectedTemplate(null); setView('builder') }}
+          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1"
+        >
           <Plus size={14}/> New Contract
         </button>
       </div>
@@ -814,11 +934,11 @@ export default function ContractsPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label:'Active Contracts',  value:'4',       sub:'All signed & running',  color:'bg-green-600'  },
-          { label:'Draft Contracts',   value:'1',       sub:'Pending signature',      color:'bg-slate-600'  },
-          { label:'Expiring Soon',     value:'1',       sub:'Within 30 days',         color:'bg-amber-600'  },
-          { label:'Total Value',       value:'₹6.4 Cr', sub:'All active contracts',   color:'bg-blue-600'   },
-        ].map((k,i) => (
+          { label:'Active Contracts', value:'4',       sub:'All signed & running', color:'bg-green-600' },
+          { label:'Draft Contracts',  value:'1',       sub:'Pending signature',    color:'bg-slate-600' },
+          { label:'Expiring Soon',    value:'1',       sub:'Within 30 days',       color:'bg-amber-600' },
+          { label:'Total Value',      value:'₹6.4 Cr', sub:'All active contracts', color:'bg-blue-600'  },
+        ].map((k, i) => (
           <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className={`w-2 h-2 rounded-full ${k.color} mb-3`}/>
             <p className="text-2xl font-bold text-white">{k.value}</p>
@@ -831,10 +951,13 @@ export default function ContractsPage() {
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1 w-fit">
         {['contracts','templates'].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg text-xs font-medium transition capitalize ${
               activeTab === tab ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
-            }`}>
+            }`}
+          >
             {tab}
           </button>
         ))}
@@ -846,21 +969,24 @@ export default function ContractsPage() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 flex-1 max-w-sm">
               <Search size={14} className="text-slate-500"/>
-              <input value={search} onChange={e => setSearch(e.target.value)}
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
                 placeholder="Search contracts..."
-                className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"/>
+                className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"
+              />
             </div>
             <button className="flex items-center gap-1.5 text-xs bg-slate-900 border border-slate-800 text-slate-400 px-3 py-2 rounded-lg">
               <Filter size={13}/> Filter
             </button>
           </div>
 
-          {/* Contract Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {filtered.map(c => (
-              <div key={c.id}
-                className="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition cursor-pointer">
-
+              <div
+                key={c.id}
+                className="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition cursor-pointer"
+              >
                 {/* Top Row */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0 mr-2">
@@ -906,10 +1032,25 @@ export default function ContractsPage() {
                 <div className="flex items-center justify-between pt-3 border-t border-slate-800">
                   <span className="text-xs text-slate-500">Payment: {c.paymentTerms}</span>
                   <div className="flex items-center gap-2">
-                    <button className="text-slate-500 hover:text-blue-400 transition"><Eye      size={14}/></button>
-                    <button className="text-slate-500 hover:text-blue-400 transition"><Edit3    size={14}/></button>
-                    <button className="text-slate-500 hover:text-blue-400 transition"><Download size={14}/></button>
-                    <button className="text-slate-500 hover:text-blue-400 transition"><Copy     size={14}/></button>
+                    <button className="text-slate-500 hover:text-blue-400 transition">
+                      <Eye size={14}/>
+                    </button>
+                    <button className="text-slate-500 hover:text-blue-400 transition">
+                      <Edit3 size={14}/>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        generateContractPDF(c)
+                      }}
+                      className="text-slate-500 hover:text-green-400 transition"
+                      title="Download PDF"
+                    >
+                      <Download size={14}/>
+                    </button>
+                    <button className="text-slate-500 hover:text-blue-400 transition">
+                      <Copy size={14}/>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -930,9 +1071,10 @@ export default function ContractsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {contractTemplates.map(t => (
-              <div key={t.id}
-                className="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-600 transition cursor-pointer group">
-
+              <div
+                key={t.id}
+                className="bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-600 transition cursor-pointer group"
+              >
                 <div className="flex items-start justify-between mb-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-800 flex items-center justify-center shrink-0">
                     <FileSignature size={18} className="text-blue-400"/>

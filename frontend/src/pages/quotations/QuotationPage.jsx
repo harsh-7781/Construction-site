@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import {
-   Plus, Trash2, Download, Send,
+  FileText, Plus, Trash2, Download, Send,
   Search, Filter, Eye, Copy,
   Building2,
   CheckCircle2, Clock, XCircle, Edit3
 } from 'lucide-react'
+import { generateQuotationPDF } from '../../utils/pdfExport'
 
 // ── Mock Data ──────────────────────────────────────────────
 const existingQuotations = [
@@ -17,28 +18,28 @@ const existingQuotations = [
 
 const serviceTemplates = {
   Civil: [
-    { description: 'Excavation and earthwork',           unit: 'M³',  rate: 850  },
-    { description: 'PCC (1:4:8) — Foundation',           unit: 'M³',  rate: 5200 },
-    { description: 'RCC (M25) — Columns & Beams',        unit: 'M³',  rate: 8500 },
-    { description: 'RCC Slab (M25)',                     unit: 'M³',  rate: 7800 },
-    { description: 'Brickwork (230mm)',                  unit: 'M²',  rate: 680  },
-    { description: 'Plastering (12mm)',                  unit: 'M²',  rate: 185  },
+    { description: 'Excavation and earthwork',           unit: 'M³',   rate: 850   },
+    { description: 'PCC (1:4:8) — Foundation',           unit: 'M³',   rate: 5200  },
+    { description: 'RCC (M25) — Columns & Beams',        unit: 'M³',   rate: 8500  },
+    { description: 'RCC Slab (M25)',                     unit: 'M³',   rate: 7800  },
+    { description: 'Brickwork (230mm)',                  unit: 'M²',   rate: 680   },
+    { description: 'Plastering (12mm)',                  unit: 'M²',   rate: 185   },
   ],
   Interior: [
-    { description: 'False ceiling — Gypsum board',       unit: 'M²',  rate: 950  },
-    { description: 'Modular kitchen supply & fix',       unit: 'Lump', rate: 185000 },
-    { description: 'Wooden flooring — Engineered',       unit: 'M²',  rate: 2200 },
-    { description: 'Wall panelling — WPC',               unit: 'M²',  rate: 1800 },
-    { description: 'Painting — 2 coats premium',         unit: 'M²',  rate: 95   },
-    { description: 'Electrical fixtures & fittings',     unit: 'Point',rate: 1200 },
+    { description: 'False ceiling — Gypsum board',       unit: 'M²',   rate: 950   },
+    { description: 'Modular kitchen supply & fix',       unit: 'Lump', rate: 185000},
+    { description: 'Wooden flooring — Engineered',       unit: 'M²',   rate: 2200  },
+    { description: 'Wall panelling — WPC',               unit: 'M²',   rate: 1800  },
+    { description: 'Painting — 2 coats premium',         unit: 'M²',   rate: 95    },
+    { description: 'Electrical fixtures & fittings',     unit: 'Point',rate: 1200  },
   ],
   MEP: [
-    { description: 'HVAC — Supply & Return ductwork',    unit: 'M²',  rate: 1450 },
-    { description: 'Plumbing — CPVC pipes & fittings',   unit: 'Point',rate: 2800 },
-    { description: 'Electrical wiring — FR cables',      unit: 'Point',rate: 1500 },
-    { description: 'Fire sprinkler system',              unit: 'Point',rate: 4500 },
-    { description: 'CCTV & security system',             unit: 'Point',rate: 3200 },
-    { description: 'Solar panels — 5kW system',          unit: 'Nos',  rate: 85000},
+    { description: 'HVAC — Supply & Return ductwork',    unit: 'M²',   rate: 1450  },
+    { description: 'Plumbing — CPVC pipes & fittings',   unit: 'Point',rate: 2800  },
+    { description: 'Electrical wiring — FR cables',      unit: 'Point',rate: 1500  },
+    { description: 'Fire sprinkler system',              unit: 'Point',rate: 4500  },
+    { description: 'CCTV & security system',             unit: 'Point',rate: 3200  },
+    { description: 'Solar panels — 5kW system',          unit: 'Nos',  rate: 85000 },
   ],
 }
 
@@ -51,6 +52,10 @@ const clients = [
 // ── Helpers ────────────────────────────────────────────────
 const formatINR = (n) =>
   new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)
+
+// const today = () => new Date().toLocaleDateString('en-IN', {
+//   day: '2-digit', month: 'short', year: 'numeric'
+// })
 
 const StatusBadge = ({ status }) => {
   const map = {
@@ -78,8 +83,8 @@ const StatusIcon = ({ status }) => {
 function BOQBuilder({ onBack }) {
   const [selectedService, setSelectedService] = useState('Civil')
   const [items, setItems] = useState([
-    { id: 1, description: 'Excavation and earthwork', unit: 'M³',  qty: 250,  rate: 850,  amount: 212500 },
-    { id: 2, description: 'RCC (M25) — Columns & Beams', unit: 'M³', qty: 85, rate: 8500, amount: 722500 },
+    { id: 1, description: 'Excavation and earthwork',        unit: 'M³', qty: 250, rate: 850,  amount: 212500 },
+    { id: 2, description: 'RCC (M25) — Columns & Beams',     unit: 'M³', qty: 85,  rate: 8500, amount: 722500 },
   ])
   const [clientName,    setClientName]    = useState('Lodha Group')
   const [projectName,   setProjectName]   = useState('')
@@ -113,8 +118,9 @@ function BOQBuilder({ onBack }) {
       if (item.id !== id) return item
       const updated = { ...item, [field]: value }
       if (field === 'qty' || field === 'rate') {
-        updated.amount = (field === 'qty' ? value : item.qty) *
-                         (field === 'rate' ? value : item.rate)
+        updated.amount =
+          (field === 'qty'  ? value : item.qty) *
+          (field === 'rate' ? value : item.rate)
       }
       return updated
     }))
@@ -122,11 +128,27 @@ function BOQBuilder({ onBack }) {
 
   const removeItem = (id) => setItems(items.filter(i => i.id !== id))
 
-  const subtotal  = items.reduce((s, i) => s + Number(i.amount), 0)
-  const discount  = subtotal * (discountPct / 100)
-  const taxable   = subtotal - discount
-  const gst       = taxable * (gstPct / 100)
-  const total     = taxable + gst
+  const subtotal = items.reduce((s, i) => s + Number(i.amount), 0)
+  const discount = subtotal * (discountPct / 100)
+  const taxable  = subtotal - discount
+  const gst      = taxable * (gstPct / 100)
+  const total    = taxable + gst
+
+  // ── PDF Handler ──
+  const handleDownloadPDF = () => {
+    generateQuotationPDF({
+      id:           `QT-${Date.now()}`,
+      client:       clientName,
+      project:      projectName,
+      service:      selectedService,
+      contractType: 'Turnkey',
+      validDays,
+      items,
+      discountPct,
+      gstPct,
+      notes,
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -134,17 +156,26 @@ function BOQBuilder({ onBack }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <button onClick={onBack} className="text-xs text-slate-500 hover:text-slate-300 mb-1 flex items-center gap-1">
+          <button
+            onClick={onBack}
+            className="text-xs text-slate-500 hover:text-slate-300 mb-1 flex items-center gap-1"
+          >
             ← Back to quotations
           </button>
           <h1 className="text-xl font-bold text-white">New Quotation</h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
             <Eye size={13} /> Preview
           </button>
           <button className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-            <Download size={13} /> Save Draft
+            <FileText size={13} /> Save Draft
+          </button>
+          <button
+            onClick={handleDownloadPDF}
+            className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+          >
+            <Download size={13} /> Download PDF
           </button>
           <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
             <Send size={13} /> Send to Client
@@ -154,7 +185,7 @@ function BOQBuilder({ onBack }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Left — Form */}
+        {/* ── Left: Form ── */}
         <div className="lg:col-span-2 space-y-4">
 
           {/* Client & Project Details */}
@@ -162,7 +193,7 @@ function BOQBuilder({ onBack }) {
             <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
               <Building2 size={15} className="text-slate-400" /> Project Details
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Client Name</label>
                 <select
@@ -203,7 +234,7 @@ function BOQBuilder({ onBack }) {
             </div>
           </div>
 
-          {/* Service Type Selector */}
+          {/* Service Type + Quick Add */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <h2 className="text-sm font-semibold text-white mb-3">Service Type</h2>
             <div className="flex gap-2 flex-wrap">
@@ -221,8 +252,6 @@ function BOQBuilder({ onBack }) {
                 </button>
               ))}
             </div>
-
-            {/* Quick add templates */}
             <div className="mt-3 pt-3 border-t border-slate-800">
               <p className="text-xs text-slate-500 mb-2">Quick add items:</p>
               <div className="flex flex-wrap gap-2">
@@ -251,7 +280,7 @@ function BOQBuilder({ onBack }) {
               </button>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" style={{ minWidth: '600px' }}>
                 <thead>
                   <tr className="text-xs text-slate-500 border-b border-slate-800 bg-slate-900/50">
                     <th className="text-left px-4 py-3 font-medium w-8">#</th>
@@ -332,11 +361,9 @@ function BOQBuilder({ onBack }) {
           </div>
         </div>
 
-        {/* Right — Summary */}
+        {/* ── Right: Summary ── */}
         <div className="space-y-4">
-
-          {/* Amount Summary */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 sticky top-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 lg:sticky lg:top-6">
             <h2 className="text-sm font-semibold text-white mb-4">Summary</h2>
 
             <div className="space-y-3 mb-4">
@@ -355,7 +382,9 @@ function BOQBuilder({ onBack }) {
                     className="w-16 bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-xs text-right focus:outline-none focus:border-blue-500"
                     min="0" max="100"
                   />
-                  <span className="text-red-400 text-sm font-medium">-₹{formatINR(discount)}</span>
+                  <span className="text-red-400 text-sm font-medium">
+                    -{formatINR(discount) === '0' ? '₹0' : `₹${formatINR(discount)}`}
+                  </span>
                 </div>
               </div>
 
@@ -367,7 +396,9 @@ function BOQBuilder({ onBack }) {
                     onChange={e => setGstPct(Number(e.target.value))}
                     className="w-16 bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
                   >
-                    {[0, 5, 12, 18, 28].map(g => <option key={g} value={g}>{g}%</option>)}
+                    {[0, 5, 12, 18, 28].map(g =>
+                      <option key={g} value={g}>{g}%</option>
+                    )}
                   </select>
                   <span className="text-slate-300 text-sm font-medium">+₹{formatINR(gst)}</span>
                 </div>
@@ -383,7 +414,10 @@ function BOQBuilder({ onBack }) {
               <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2">
                 <Send size={14} /> Send to Client
               </button>
-              <button className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm py-2.5 rounded-lg transition flex items-center justify-center gap-2 border border-slate-700">
+              <button
+                onClick={handleDownloadPDF}
+                className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2.5 rounded-lg transition flex items-center justify-center gap-2"
+              >
                 <Download size={14} /> Download PDF
               </button>
               <button className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm py-2.5 rounded-lg transition flex items-center justify-center gap-2 border border-slate-700">
@@ -414,9 +448,16 @@ function BOQBuilder({ onBack }) {
 
 // ── Main Component ──────────────────────────────────────────
 export default function QuotationPage() {
-  const [view, setView] = useState('list')
+  const [view,        setView]        = useState('list')
+  const [searchQuery, setSearchQuery] = useState('')
 
   if (view === 'create') return <BOQBuilder onBack={() => setView('list')} />
+
+  const filtered = existingQuotations.filter(q =>
+    q.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    q.project.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    q.id.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   return (
     <div className="space-y-6">
@@ -438,10 +479,10 @@ export default function QuotationPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Sent',    value: '24',      sub: 'This financial year', color: 'bg-blue-600'   },
-          { label: 'Approved',      value: '14',      sub: '58% approval rate',   color: 'bg-green-600'  },
-          { label: 'Pending',       value: '6',       sub: 'Awaiting response',   color: 'bg-amber-600'  },
-          { label: 'Total Value',   value: '₹18.2 Cr',sub: 'All quotations',      color: 'bg-purple-600' },
+          { label: 'Total Sent',   value: '24',       sub: 'This financial year', color: 'bg-blue-600'   },
+          { label: 'Approved',     value: '14',        sub: '58% approval rate',  color: 'bg-green-600'  },
+          { label: 'Pending',      value: '6',         sub: 'Awaiting response',  color: 'bg-amber-600'  },
+          { label: 'Total Value',  value: '₹18.2 Cr',  sub: 'All quotations',     color: 'bg-purple-600' },
         ].map((s, i) => (
           <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className={`w-2 h-2 rounded-full ${s.color} mb-3`} />
@@ -457,6 +498,8 @@ export default function QuotationPage() {
         <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 flex-1 max-w-sm">
           <Search size={14} className="text-slate-500" />
           <input
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search quotations..."
             className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"
           />
@@ -468,58 +511,72 @@ export default function QuotationPage() {
 
       {/* Quotations Table */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-xs text-slate-500 border-b border-slate-800">
-              <th className="text-left px-5 py-3 font-medium">Quote ID</th>
-              <th className="text-left px-5 py-3 font-medium">Client</th>
-              <th className="text-left px-5 py-3 font-medium">Project</th>
-              <th className="text-left px-5 py-3 font-medium">Service</th>
-              <th className="text-left px-5 py-3 font-medium">Amount</th>
-              <th className="text-left px-5 py-3 font-medium">Date</th>
-              <th className="text-left px-5 py-3 font-medium">Status</th>
-              <th className="text-left px-5 py-3 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800">
-            {existingQuotations.map((q) => (
-              <tr key={q.id} className="hover:bg-slate-800/50 transition cursor-pointer">
-                <td className="px-5 py-4 text-blue-400 font-medium">{q.id}</td>
-                <td className="px-5 py-4 text-white font-medium">{q.client}</td>
-                <td className="px-5 py-4 text-slate-400 text-xs max-w-45 truncate">{q.project}</td>
-                <td className="px-5 py-4">
-                  <span className="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
-                    {q.service}
-                  </span>
-                </td>
-                <td className="px-5 py-4 text-white font-medium">{q.amount}</td>
-                <td className="px-5 py-4 text-slate-400 text-xs">{q.date}</td>
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-1.5">
-                    <StatusIcon status={q.status} />
-                    <StatusBadge status={q.status} />
-                  </div>
-                </td>
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-2">
-                    <button className="text-slate-500 hover:text-blue-400 transition">
-                      <Eye size={14} />
-                    </button>
-                    <button className="text-slate-500 hover:text-blue-400 transition">
-                      <Edit3 size={14} />
-                    </button>
-                    <button className="text-slate-500 hover:text-blue-400 transition">
-                      <Copy size={14} />
-                    </button>
-                    <button className="text-slate-500 hover:text-blue-400 transition">
-                      <Download size={14} />
-                    </button>
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm" style={{ minWidth: '700px' }}>
+            <thead>
+              <tr className="text-xs text-slate-500 border-b border-slate-800">
+                <th className="text-left px-5 py-3 font-medium">Quote ID</th>
+                <th className="text-left px-5 py-3 font-medium">Client</th>
+                <th className="text-left px-5 py-3 font-medium">Project</th>
+                <th className="text-left px-5 py-3 font-medium">Service</th>
+                <th className="text-left px-5 py-3 font-medium">Amount</th>
+                <th className="text-left px-5 py-3 font-medium">Date</th>
+                <th className="text-left px-5 py-3 font-medium">Status</th>
+                <th className="text-left px-5 py-3 font-medium">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-800">
+              {filtered.map((q) => (
+                <tr key={q.id} className="hover:bg-slate-800/50 transition cursor-pointer">
+                  <td className="px-5 py-4 text-blue-400 font-medium">{q.id}</td>
+                  <td className="px-5 py-4 text-white font-medium">{q.client}</td>
+                  <td className="px-5 py-4 text-slate-400 text-xs max-w-40 truncate">{q.project}</td>
+                  <td className="px-5 py-4">
+                    <span className="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                      {q.service}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 text-white font-medium">{q.amount}</td>
+                  <td className="px-5 py-4 text-slate-400 text-xs">{q.date}</td>
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-1.5">
+                      <StatusIcon status={q.status} />
+                      <StatusBadge status={q.status} />
+                    </div>
+                  </td>
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-2">
+                      <button className="text-slate-500 hover:text-blue-400 transition">
+                        <Eye size={14} />
+                      </button>
+                      <button className="text-slate-500 hover:text-blue-400 transition">
+                        <Edit3 size={14} />
+                      </button>
+                      <button className="text-slate-500 hover:text-blue-400 transition">
+                        <Copy size={14} />
+                      </button>
+                      <button
+                        onClick={() => generateQuotationPDF({
+                          id:      q.id,
+                          client:  q.client,
+                          project: q.project,
+                          service: q.service,
+                          items: [
+                            { description: q.project, unit: 'Lump', qty: 1, rate: 0, amount: 0 }
+                          ],
+                        })}
+                        className="text-slate-500 hover:text-green-400 transition"
+                        title="Download PDF"
+                      >
+                        <Download size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>

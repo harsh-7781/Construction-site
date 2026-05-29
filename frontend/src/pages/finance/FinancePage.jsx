@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Plus, Search, Filter, Download,
+   Plus, Search, Filter, Download,
   ArrowDownLeft, ArrowUpRight, TrendingUp, TrendingDown,
   FileText, CheckCircle2, Clock, AlertCircle,  PiggyBank, Receipt,
   Eye, Send,
@@ -9,6 +9,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
+import { generateInvoicePDF } from '../../utils/pdfExport'
 
 // ── Mock Data ──────────────────────────────────────────────
 const monthlyData = [
@@ -61,8 +62,8 @@ const expenseCategories = [
 // ── Helpers ────────────────────────────────────────────────
 const formatINR = (n) => {
   const abs = Math.abs(n)
-  if (abs >= 10000000) return `₹${(abs/10000000).toFixed(2)} Cr`
-  if (abs >= 100000)   return `₹${(abs/100000).toFixed(1)} L`
+  if (abs >= 10000000) return `₹${(abs / 10000000).toFixed(2)} Cr`
+  if (abs >= 100000)   return `₹${(abs / 100000).toFixed(1)} L`
   return `₹${new Intl.NumberFormat('en-IN').format(abs)}`
 }
 
@@ -88,7 +89,11 @@ const ExpenseStatusBadge = ({ status }) => {
     rejected: { label: 'Rejected', cls: 'bg-red-900/40   text-red-400   border-red-800'   },
   }
   const { label, cls } = map[status] || map.pending
-  return <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cls}`}>{label}</span>
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cls}`}>
+      {label}
+    </span>
+  )
 }
 
 const CategoryColor = (cat) => {
@@ -118,19 +123,36 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 // ── New Invoice Form ───────────────────────────────────────
 function NewInvoiceForm({ onBack }) {
-  const [client,    setClient]    = useState('Oberoi Group')
-  const [project,   setProject]   = useState('')
-  const [amount,    setAmount]    = useState('')
-  const [type,      setType]      = useState('progress')
-  const [dueDate,   setDueDate]   = useState('')
-  const [notes,     setNotes]     = useState('')
-  const gst     = Number(amount) * 0.18
-  const total   = Number(amount) + gst
+  const [client,   setClient]   = useState('Oberoi Group')
+  const [project,  setProject]  = useState('')
+  const [amount,   setAmount]   = useState('')
+  const [type,     setType]     = useState('progress')
+  const [dueDate,  setDueDate]  = useState('')
+  const [notes,    setNotes]    = useState('')
+
+  const gst   = Number(amount) * 0.18
+  const total = Number(amount) + gst
+
+  const handleDownloadPDF = () => {
+    generateInvoicePDF({
+      id:      'INV-DRAFT',
+      client,
+      project,
+      amount:  Number(amount),
+      type,
+      due:     dueDate,
+      status:  'pending',
+      notes,
+    })
+  }
 
   return (
     <div className="space-y-6">
       <div>
-        <button onClick={onBack} className="text-xs text-slate-500 hover:text-slate-300 mb-2 flex items-center gap-1">
+        <button
+          onClick={onBack}
+          className="text-xs text-slate-500 hover:text-slate-300 mb-2 flex items-center gap-1"
+        >
           ← Back to Finance
         </button>
         <h1 className="text-xl font-bold text-white">Create New Invoice</h1>
@@ -138,55 +160,79 @@ function NewInvoiceForm({ onBack }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <h2 className="text-sm font-semibold text-white mb-4">Invoice Details</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Client</label>
-                <select value={client} onChange={e=>setClient(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                  {['Oberoi Group','Raheja Corp','Lodha Group','Kohinoor Infra','MIDC'].map(c=>
-                    <option key={c}>{c}</option>)}
+                <select
+                  value={client}
+                  onChange={e => setClient(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                >
+                  {['Oberoi Group','Raheja Corp','Lodha Group','Kohinoor Infra','MIDC'].map(c =>
+                    <option key={c}>{c}</option>
+                  )}
                 </select>
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Project</label>
-                <input value={project} onChange={e=>setProject(e.target.value)}
+                <input
+                  value={project}
+                  onChange={e => setProject(e.target.value)}
                   placeholder="Select or type project"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Invoice Type</label>
-                <select value={type} onChange={e=>setType(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                  {['advance','progress','milestone','final'].map(t=>
-                    <option key={t} value={t} className="capitalize">{t.charAt(0).toUpperCase()+t.slice(1)} Invoice</option>)}
+                <select
+                  value={type}
+                  onChange={e => setType(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                >
+                  {['advance','progress','milestone','final'].map(t =>
+                    <option key={t} value={t} className="capitalize">
+                      {t.charAt(0).toUpperCase() + t.slice(1)} Invoice
+                    </option>
+                  )}
                 </select>
               </div>
               <div>
                 <label className="block text-xs text-slate-400 mb-1.5">Due Date</label>
-                <input type="date" value={dueDate} onChange={e=>setDueDate(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                <input
+                  type="date"
+                  value={dueDate}
+                  onChange={e => setDueDate(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div className="col-span-2">
                 <label className="block text-xs text-slate-400 mb-1.5">Base Amount (₹)</label>
-                <input type="number" value={amount} onChange={e=>setAmount(e.target.value)}
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"/>
+                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                />
               </div>
               <div className="col-span-2">
                 <label className="block text-xs text-slate-400 mb-1.5">Notes</label>
-                <textarea value={notes} onChange={e=>setNotes(e.target.value)} rows={3}
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  rows={3}
                   placeholder="Payment terms, bank details, notes..."
-                  className="w-full bg-slate-800 border border-slate-700 text-slate-300 placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none"/>
+                  className="w-full bg-slate-800 border border-slate-700 text-slate-300 placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none"
+                />
               </div>
             </div>
           </div>
         </div>
 
         {/* Summary */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 h-fit sticky top-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 h-fit lg:sticky lg:top-6">
           <h2 className="text-sm font-semibold text-white mb-4">Invoice Summary</h2>
           <div className="space-y-3 mb-5">
             <div className="flex justify-between text-sm">
@@ -199,14 +245,19 @@ function NewInvoiceForm({ onBack }) {
             </div>
             <div className="border-t border-slate-700 pt-3 flex justify-between">
               <span className="text-white font-semibold">Total</span>
-              <span className="text-xl font-bold text-blue-400">{amount ? formatINR(total) : '₹0'}</span>
+              <span className="text-xl font-bold text-blue-400">
+                {amount ? formatINR(total) : '₹0'}
+              </span>
             </div>
           </div>
           <div className="space-y-2">
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg flex items-center justify-center gap-2">
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition">
               <Send size={14}/> Send Invoice
             </button>
-            <button className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm py-2.5 rounded-lg flex items-center justify-center gap-2">
+            <button
+              onClick={handleDownloadPDF}
+              className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2.5 rounded-lg flex items-center justify-center gap-2 transition"
+            >
               <Download size={14}/> Download PDF
             </button>
           </div>
@@ -243,7 +294,8 @@ export default function FinancePage() {
           </button>
           <button
             onClick={() => setView('new-invoice')}
-            className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+            className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+          >
             <Plus size={14}/> New Invoice
           </button>
         </div>
@@ -252,10 +304,10 @@ export default function FinancePage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Billed',    value: formatINR(totalBilled),      sub: 'FY 2025–26',          icon: Receipt,    color: 'bg-blue-600',   trend: '+18%', up: true  },
-          { label: 'Amount Received', value: formatINR(totalReceived),    sub: 'Collection rate 63%', icon: PiggyBank,  color: 'bg-green-600',  trend: '+11%', up: true  },
-          { label: 'Outstanding',     value: formatINR(totalOutstanding), sub: 'Awaiting payment',    icon: Clock,      color: 'bg-amber-600',  trend: '2 inv',up: null  },
-          { label: 'Overdue',         value: formatINR(totalOverdue),     sub: 'Action needed',       icon: AlertCircle,color: 'bg-red-600',    trend: '-8%',  up: false },
+          { label: 'Total Billed',    value: formatINR(totalBilled),      sub: 'FY 2025–26',           icon: Receipt,     color: 'bg-blue-600',  trend: '+18%', up: true  },
+          { label: 'Amount Received', value: formatINR(totalReceived),    sub: 'Collection rate 63%',  icon: PiggyBank,   color: 'bg-green-600', trend: '+11%', up: true  },
+          { label: 'Outstanding',     value: formatINR(totalOutstanding), sub: 'Awaiting payment',     icon: Clock,       color: 'bg-amber-600', trend: '2 inv',up: null  },
+          { label: 'Overdue',         value: formatINR(totalOverdue),     sub: 'Action needed',        icon: AlertCircle, color: 'bg-red-600',   trend: '-8%',  up: false },
         ].map((k, i) => (
           <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div className="flex items-start justify-between mb-3">
@@ -276,12 +328,15 @@ export default function FinancePage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1 w-fit overflow-x-auto">
         {['overview','invoices','expenses','transactions'].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-lg text-xs font-medium transition capitalize ${
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-lg text-xs font-medium transition capitalize whitespace-nowrap ${
               activeTab === tab ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
-            }`}>
+            }`}
+          >
             {tab}
           </button>
         ))}
@@ -344,7 +399,9 @@ export default function FinancePage() {
                   <div key={e.name}>
                     <div className="flex justify-between text-xs mb-1">
                       <span className="text-slate-400">{e.name}</span>
-                      <span className="text-white font-medium">{formatINR(e.amount)} <span className="text-slate-500">({e.pct}%)</span></span>
+                      <span className="text-white font-medium">
+                        {formatINR(e.amount)} <span className="text-slate-500">({e.pct}%)</span>
+                      </span>
                     </div>
                     <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                       <div className={`h-full rounded-full ${e.color}`} style={{ width:`${e.pct}%` }}/>
@@ -357,10 +414,15 @@ export default function FinancePage() {
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-semibold text-white">Recent Transactions</h2>
-                <button onClick={() => setActiveTab('transactions')} className="text-xs text-blue-400 hover:text-blue-300">View all</button>
+                <button
+                  onClick={() => setActiveTab('transactions')}
+                  className="text-xs text-blue-400 hover:text-blue-300"
+                >
+                  View all
+                </button>
               </div>
               <div className="space-y-1">
-                {transactions.slice(0,5).map((t, i) => (
+                {transactions.slice(0, 5).map((t, i) => (
                   <div key={i} className="flex items-center justify-between py-2.5 border-b border-slate-800 last:border-0">
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
@@ -376,7 +438,7 @@ export default function FinancePage() {
                         <p className="text-xs text-slate-600">{t.date}</p>
                       </div>
                     </div>
-                    <span className={`text-sm font-semibold ${t.type==='credit' ? 'text-green-400' : 'text-red-400'}`}>
+                    <span className={`text-sm font-semibold ${t.type === 'credit' ? 'text-green-400' : 'text-red-400'}`}>
                       {t.type === 'credit' ? '+' : '-'}{formatINR(Math.abs(t.amount))}
                     </span>
                   </div>
@@ -393,49 +455,76 @@ export default function FinancePage() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 flex-1 max-w-sm">
               <Search size={14} className="text-slate-500"/>
-              <input placeholder="Search invoices..." className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"/>
+              <input
+                placeholder="Search invoices..."
+                className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"
+              />
             </div>
             <button className="flex items-center gap-1.5 text-xs bg-slate-900 border border-slate-800 text-slate-400 px-3 py-2 rounded-lg">
               <Filter size={13}/> Filter
             </button>
           </div>
+
           <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-xs text-slate-500 border-b border-slate-800">
-                  <th className="text-left px-5 py-3 font-medium">Invoice</th>
-                  <th className="text-left px-5 py-3 font-medium">Client</th>
-                  <th className="text-left px-5 py-3 font-medium">Project</th>
-                  <th className="text-left px-5 py-3 font-medium">Type</th>
-                  <th className="text-left px-5 py-3 font-medium">Amount</th>
-                  <th className="text-left px-5 py-3 font-medium">Due</th>
-                  <th className="text-left px-5 py-3 font-medium">Status</th>
-                  <th className="text-left px-5 py-3 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {invoices.map(inv => (
-                  <tr key={inv.id} className="hover:bg-slate-800/50 transition cursor-pointer">
-                    <td className="px-5 py-4 text-blue-400 font-medium">{inv.id}</td>
-                    <td className="px-5 py-4 text-white font-medium text-xs">{inv.client}</td>
-                    <td className="px-5 py-4 text-slate-400 text-xs max-w-40 truncate">{inv.project}</td>
-                    <td className="px-5 py-4">
-                      <span className="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded capitalize">{inv.type}</span>
-                    </td>
-                    <td className="px-5 py-4 text-white font-medium">{formatINR(inv.amount)}</td>
-                    <td className="px-5 py-4 text-slate-400 text-xs">{inv.due}</td>
-                    <td className="px-5 py-4"><InvoiceStatusBadge status={inv.status}/></td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <button className="text-slate-500 hover:text-blue-400 transition"><Eye  size={14}/></button>
-                        <button className="text-slate-500 hover:text-blue-400 transition"><Send size={14}/></button>
-                        <button className="text-slate-500 hover:text-blue-400 transition"><Download size={14}/></button>
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ minWidth: '750px' }}>
+                <thead>
+                  <tr className="text-xs text-slate-500 border-b border-slate-800">
+                    <th className="text-left px-5 py-3 font-medium">Invoice</th>
+                    <th className="text-left px-5 py-3 font-medium">Client</th>
+                    <th className="text-left px-5 py-3 font-medium">Project</th>
+                    <th className="text-left px-5 py-3 font-medium">Type</th>
+                    <th className="text-left px-5 py-3 font-medium">Amount</th>
+                    <th className="text-left px-5 py-3 font-medium">Due</th>
+                    <th className="text-left px-5 py-3 font-medium">Status</th>
+                    <th className="text-left px-5 py-3 font-medium">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {invoices.map(inv => (
+                    <tr key={inv.id} className="hover:bg-slate-800/50 transition cursor-pointer">
+                      <td className="px-5 py-4 text-blue-400 font-medium">{inv.id}</td>
+                      <td className="px-5 py-4 text-white font-medium text-xs">{inv.client}</td>
+                      <td className="px-5 py-4 text-slate-400 text-xs max-w-40 truncate">{inv.project}</td>
+                      <td className="px-5 py-4">
+                        <span className="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded capitalize">
+                          {inv.type}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-white font-medium">{formatINR(inv.amount)}</td>
+                      <td className="px-5 py-4 text-slate-400 text-xs">{inv.due}</td>
+                      <td className="px-5 py-4"><InvoiceStatusBadge status={inv.status}/></td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2">
+                          <button className="text-slate-500 hover:text-blue-400 transition">
+                            <Eye size={14}/>
+                          </button>
+                          <button className="text-slate-500 hover:text-blue-400 transition">
+                            <Send size={14}/>
+                          </button>
+                          <button
+                            onClick={() => generateInvoicePDF({
+                              id:      inv.id,
+                              client:  inv.client,
+                              project: inv.project,
+                              amount:  inv.amount,
+                              type:    inv.type,
+                              raised:  inv.raised,
+                              due:     inv.due,
+                              status:  inv.status,
+                            })}
+                            className="text-slate-500 hover:text-green-400 transition"
+                            title="Download PDF"
+                          >
+                            <Download size={14}/>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -446,45 +535,51 @@ export default function FinancePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 w-64">
               <Search size={14} className="text-slate-500"/>
-              <input placeholder="Search expenses..." className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"/>
+              <input
+                placeholder="Search expenses..."
+                className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"
+              />
             </div>
             <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
               <Plus size={13}/> Add Expense
             </button>
           </div>
+
           <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-xs text-slate-500 border-b border-slate-800">
-                  <th className="text-left px-5 py-3 font-medium">ID</th>
-                  <th className="text-left px-5 py-3 font-medium">Description</th>
-                  <th className="text-left px-5 py-3 font-medium">Category</th>
-                  <th className="text-left px-5 py-3 font-medium">Project</th>
-                  <th className="text-left px-5 py-3 font-medium">Vendor</th>
-                  <th className="text-left px-5 py-3 font-medium">Amount</th>
-                  <th className="text-left px-5 py-3 font-medium">Date</th>
-                  <th className="text-left px-5 py-3 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {expenses.map(exp => (
-                  <tr key={exp.id} className="hover:bg-slate-800/50 transition cursor-pointer">
-                    <td className="px-5 py-3 text-slate-500 text-xs">{exp.id}</td>
-                    <td className="px-5 py-3 text-slate-300 font-medium text-xs">{exp.desc}</td>
-                    <td className="px-5 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded font-medium ${CategoryColor(exp.category)}`}>
-                        {exp.category}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{exp.project}</td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{exp.vendor}</td>
-                    <td className="px-5 py-3 text-white font-medium">{formatINR(exp.amount)}</td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{exp.date}</td>
-                    <td className="px-5 py-3"><ExpenseStatusBadge status={exp.status}/></td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ minWidth: '750px' }}>
+                <thead>
+                  <tr className="text-xs text-slate-500 border-b border-slate-800">
+                    <th className="text-left px-5 py-3 font-medium">ID</th>
+                    <th className="text-left px-5 py-3 font-medium">Description</th>
+                    <th className="text-left px-5 py-3 font-medium">Category</th>
+                    <th className="text-left px-5 py-3 font-medium">Project</th>
+                    <th className="text-left px-5 py-3 font-medium">Vendor</th>
+                    <th className="text-left px-5 py-3 font-medium">Amount</th>
+                    <th className="text-left px-5 py-3 font-medium">Date</th>
+                    <th className="text-left px-5 py-3 font-medium">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {expenses.map(exp => (
+                    <tr key={exp.id} className="hover:bg-slate-800/50 transition cursor-pointer">
+                      <td className="px-5 py-3 text-slate-500 text-xs">{exp.id}</td>
+                      <td className="px-5 py-3 text-slate-300 font-medium text-xs">{exp.desc}</td>
+                      <td className="px-5 py-3">
+                        <span className={`text-xs px-2 py-0.5 rounded font-medium ${CategoryColor(exp.category)}`}>
+                          {exp.category}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-slate-400 text-xs">{exp.project}</td>
+                      <td className="px-5 py-3 text-slate-400 text-xs">{exp.vendor}</td>
+                      <td className="px-5 py-3 text-white font-medium">{formatINR(exp.amount)}</td>
+                      <td className="px-5 py-3 text-slate-400 text-xs">{exp.date}</td>
+                      <td className="px-5 py-3"><ExpenseStatusBadge status={exp.status}/></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -500,7 +595,10 @@ export default function FinancePage() {
           </div>
           <div className="space-y-1">
             {transactions.map((t, i) => (
-              <div key={i} className="flex items-center justify-between py-3.5 border-b border-slate-800 last:border-0 hover:bg-slate-800/30 px-2 rounded-lg transition cursor-pointer">
+              <div
+                key={i}
+                className="flex items-center justify-between py-3.5 border-b border-slate-800 last:border-0 hover:bg-slate-800/30 px-2 rounded-lg transition cursor-pointer"
+              >
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
                     t.type === 'credit' ? 'bg-green-900/40' : 'bg-red-900/40'
@@ -516,10 +614,12 @@ export default function FinancePage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`text-base font-bold ${t.type==='credit' ? 'text-green-400' : 'text-red-400'}`}>
+                  <p className={`text-base font-bold ${t.type === 'credit' ? 'text-green-400' : 'text-red-400'}`}>
                     {t.type === 'credit' ? '+' : '-'}{formatINR(Math.abs(t.amount))}
                   </p>
-                  <p className="text-xs text-slate-600 mt-0.5">{t.type === 'credit' ? 'Credit' : 'Debit'}</p>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    {t.type === 'credit' ? 'Credit' : 'Debit'}
+                  </p>
                 </div>
               </div>
             ))}
