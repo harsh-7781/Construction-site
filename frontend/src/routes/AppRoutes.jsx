@@ -13,6 +13,7 @@ import FinancePage from '../pages/finance/FinancePage'
 import ProcurementPage from '../pages/procurement/ProcurementPage'
 import SettingsPage from '../pages/settings/SettingsPage'
 import ContractsPage from '../pages/contracts/ContractsPage'
+import SitePage from '../pages/site/SitePage'
 
 const RoleDashboard = () =>{
     const {user} = useAuthStore()
@@ -51,6 +52,7 @@ export default function AppRoutes() {
         <Route path="procurement" element={<ProcurementPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="contracts" element={<ContractsPage />} />
+        <Route path="site" element={<SitePage />} />
       </Routes>
     </BrowserRouter>
   )

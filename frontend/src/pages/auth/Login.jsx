@@ -11,13 +11,7 @@ const DEMO_USERS = [
   { email: 'supervisor@constructos.com', password: 'demo123', role: 'supervisor', name: 'Vikram Singh',     title: 'Site Supervisor' },
 ]
 
-// 👇 REPLACE THIS URL WITH YOUR OWN IMAGE ADDRESS
-// Examples:
-// - Google Photos: https://lh3.googleusercontent.com/... (direct link)
-// - Imgur: https://i.imgur.com/your-image.png
-// - Local file: '/logo.png' (place in public folder)
-// - Any CDN or cloud storage URL
-// const CUSTOM_LOGO_URL = 'https://your-image-url.com/logo.png'  // <-- CHANGE THIS
+
 
 export default function Login() {
   const [email, setEmail]       = useState('')
@@ -54,107 +48,133 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-size:[48px_48px]" />
+  <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+    style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%)' }}>
 
-      <div className="relative w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg mb-4 overflow-hidden">
-            <img 
-              src={"https://kumbharconstructionanddevelopers.com/Favicon.png"} 
-              alt="Company Logo" 
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback if image fails to load
-                e.target.style.display = 'none'
-                e.target.parentElement.innerHTML = '<span class="text-white text-2xl font-bold">C</span>'
+    {/* Grid overlay */}
+    <div className="absolute inset-0"
+      style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px)',
+        backgroundSize: '48px 48px'
+      }} />
+
+    {/* Glow blobs */}
+    <div className="absolute inset-0 pointer-events-none"
+      style={{
+        background: 'radial-gradient(ellipse at 30% 50%, rgba(37,99,235,0.12) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(99,102,241,0.08) 0%, transparent 50%)'
+      }} />
+
+    <div className="relative z-10 w-full max-w-md">
+      {/* Logo */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #2563eb, #4f46e5)' }}>
+          <img
+            src="https://kumbharconstructionanddevelopers.com/Favicon.png"
+            alt="Company Logo"
+            className="w-full h-full object-cover"
+            onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<span style="color:#fff;font-size:22px;font-weight:500">K</span>' }}
+          />
+        </div>
+        <h1 className="text-lg font-medium text-white leading-snug">
+          Kumbhar Construction<br />and Developers
+        </h1>
+        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Construction Business Platform</p>
+      </div>
+
+      {/* Card */}
+      <div className="rounded-2xl p-8"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          backdropFilter: 'blur(20px)'
+        }}>
+        <h2 className="text-sm font-medium mb-6" style={{ color: 'rgba(255,255,255,0.9)' }}>
+          Sign in to your account
+        </h2>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-xs mb-1.5" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.03em' }}>
+              Email address
+            </label>
+            <input
+              type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@constructos.com" required
+              className="w-full rounded-xl px-4 py-2.5 text-sm outline-none transition"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#fff'
               }}
+              onFocus={e => { e.target.style.border = '1px solid rgba(99,102,241,0.6)'; e.target.style.background = 'rgba(255,255,255,0.08)' }}
+              onBlur={e => { e.target.style.border = '1px solid rgba(255,255,255,0.1)'; e.target.style.background = 'rgba(255,255,255,0.05)' }}
             />
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            Kumbhar Construction and Developers
-          </h1>
-          {/* <p className="text-gray-500 text-sm mt-1">Construction Business Platform</p> */}
-        </div>
 
-        {/* Card */}
-        <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-8 shadow-xl">
-          <h2 className="text-lg font-semibold text-gray-800 mb-6">Sign in to your account</h2>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-600 mb-1.5">Email address</label>
+          <div>
+            <label className="block text-xs mb-1.5" style={{ color: 'rgba(255,255,255,0.45)', letterSpacing: '0.03em' }}>
+              Password
+            </label>
+            <div className="relative">
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@constructos.com"
-                required
-                className="w-full bg-white border border-gray-300 text-gray-800 placeholder-gray-400 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
+                type={showPass ? 'text' : 'password'} value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••" required
+                className="w-full rounded-xl px-4 py-2.5 pr-10 text-sm outline-none transition"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#fff'
+                }}
+                onFocus={e => { e.target.style.border = '1px solid rgba(99,102,241,0.6)'; e.target.style.background = 'rgba(255,255,255,0.08)' }}
+                onBlur={e => { e.target.style.border = '1px solid rgba(255,255,255,0.1)'; e.target.style.background = 'rgba(255,255,255,0.05)' }}
               />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-600 mb-1.5">Password</label>
-              <div className="relative">
-                <input
-                  type={showPass ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full bg-white border border-gray-300 text-gray-800 placeholder-gray-400 rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-60 text-white font-medium rounded-lg py-2.5 text-sm transition flex items-center justify-center gap-2 shadow-md"
-            >
-              {loading && <Loader2 size={16} className="animate-spin" />}
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </form>
-
-          {/* Quick login */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-xs text-gray-500 mb-3">Quick demo login:</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {DEMO_USERS.map((u) => (
-                <button
-                  key={u.role}
-                  onClick={() => quickLogin(u)}
-                  className="text-left bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-lg px-3 py-2 transition"
-                >
-                  <p className="text-xs font-medium text-gray-700 capitalize">{u.role.toUpperCase()}</p>
-                  <p className="text-xs text-gray-500 truncate">{u.name}</p>
-                </button>
-              ))}
+              <button type="button" onClick={() => setShowPass(!showPass)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition"
+                style={{ color: 'rgba(255,255,255,0.35)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+              </button>
             </div>
           </div>
-        </div>
 
-        <p className="text-center text-gray-400 text-xs mt-6">
-          ConstructOS v1.0 · All rights reserved
-        </p>
+          {error && (
+            <p className="text-xs rounded-xl px-3 py-2"
+              style={{ background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.3)', color: '#fca5a5' }}>
+              {error}
+            </p>
+          )}
+
+          <button type="submit" disabled={loading}
+            className="w-full font-medium rounded-xl py-2.5 text-sm text-white flex items-center justify-center gap-2 transition"
+            style={{ background: 'linear-gradient(135deg, #2563eb, #4f46e5)', border: 'none' }}>
+            {loading && <Loader2 size={15} className="animate-spin" />}
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+        </form>
+
+        {/* Quick login */}
+        <div className="mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>Quick demo login:</p>
+          <div className="grid grid-cols-2 gap-2">
+            {DEMO_USERS.map((u) => (
+              <button key={u.role} onClick={() => quickLogin(u)}
+                className="text-left rounded-xl px-3 py-2 transition"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
+                <p className="text-xs font-medium" style={{ color: 'rgba(99,149,255,0.9)' }}>{u.role.toUpperCase()}</p>
+                <p className="text-xs truncate mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>{u.name}</p>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
+
+      <p className="text-center text-xs mt-6" style={{ color: 'rgba(255,255,255,0.2)' }}>
+        ConstructOS v1.0 · All rights reserved
+      </p>
     </div>
-  )
+  </div>
+)
 }
