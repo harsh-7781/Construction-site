@@ -53,16 +53,12 @@ const clients = [
 const formatINR = (n) =>
   new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)
 
-// const today = () => new Date().toLocaleDateString('en-IN', {
-//   day: '2-digit', month: 'short', year: 'numeric'
-// })
-
 const StatusBadge = ({ status }) => {
   const map = {
-    draft:    { label: 'Draft',    cls: 'bg-slate-800    text-slate-300 border-slate-700' },
-    sent:     { label: 'Sent',     cls: 'bg-blue-900/40  text-blue-400  border-blue-800'  },
-    approved: { label: 'Approved', cls: 'bg-green-900/40 text-green-400 border-green-800' },
-    rejected: { label: 'Rejected', cls: 'bg-red-900/40   text-red-400   border-red-800'   },
+    draft:    { label: 'Draft',    cls: 'bg-gray-100 text-gray-600 border-gray-200' },
+    sent:     { label: 'Sent',     cls: 'bg-blue-100 text-blue-700 border-blue-200' },
+    approved: { label: 'Approved', cls: 'bg-green-100 text-green-700 border-green-200' },
+    rejected: { label: 'Rejected', cls: 'bg-red-100 text-red-700 border-red-200' },
   }
   const { label, cls } = map[status] || map.draft
   return (
@@ -73,10 +69,10 @@ const StatusBadge = ({ status }) => {
 }
 
 const StatusIcon = ({ status }) => {
-  if (status === 'approved') return <CheckCircle2 size={14} className="text-green-400" />
-  if (status === 'rejected') return <XCircle      size={14} className="text-red-400"   />
-  if (status === 'sent')     return <Send         size={14} className="text-blue-400"  />
-  return                            <Clock        size={14} className="text-slate-400" />
+  if (status === 'approved') return <CheckCircle2 size={14} className="text-green-600" />
+  if (status === 'rejected') return <XCircle      size={14} className="text-red-500"   />
+  if (status === 'sent')     return <Send         size={14} className="text-blue-600"  />
+  return                            <Clock        size={14} className="text-gray-400" />
 }
 
 // ── BOQ Builder ────────────────────────────────────────────
@@ -158,26 +154,26 @@ function BOQBuilder({ onBack }) {
         <div>
           <button
             onClick={onBack}
-            className="text-xs text-slate-500 hover:text-slate-300 mb-1 flex items-center gap-1"
+            className="text-xs text-gray-500 hover:text-gray-700 mb-1 flex items-center gap-1"
           >
             ← Back to quotations
           </button>
-          <h1 className="text-xl font-bold text-white">New Quotation</h1>
+          <h1 className="text-xl font-bold text-gray-900">New Quotation</h1>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <button className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <button className="text-xs bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
             <Eye size={13} /> Preview
           </button>
-          <button className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <button className="text-xs bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
             <FileText size={13} /> Save Draft
           </button>
           <button
             onClick={handleDownloadPDF}
-            className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+            className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm"
           >
             <Download size={13} /> Download PDF
           </button>
-          <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
             <Send size={13} /> Send to Client
           </button>
         </div>
@@ -189,54 +185,54 @@ function BOQBuilder({ onBack }) {
         <div className="lg:col-span-2 space-y-4">
 
           {/* Client & Project Details */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-              <Building2 size={15} className="text-slate-400" /> Project Details
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Building2 size={15} className="text-gray-500" /> Project Details
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">Client Name</label>
+                <label className="block text-xs text-gray-500 mb-1.5">Client Name</label>
                 <select
                   value={clientName}
                   onChange={e => setClientName(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition"
+                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 >
                   {clients.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">Project Name</label>
+                <label className="block text-xs text-gray-500 mb-1.5">Project Name</label>
                 <input
                   value={projectName}
                   onChange={e => setProjectName(e.target.value)}
                   placeholder="e.g. Residential Tower Phase 1"
-                  className="w-full bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition"
+                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">Quotation Date</label>
+                <label className="block text-xs text-gray-500 mb-1.5">Quotation Date</label>
                 <input
                   type="date"
                   value={quoteDate}
                   onChange={e => setQuoteDate(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition"
+                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">Valid For (days)</label>
+                <label className="block text-xs text-gray-500 mb-1.5">Valid For (days)</label>
                 <input
                   type="number"
                   value={validDays}
                   onChange={e => setValidDays(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition"
+                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
               </div>
             </div>
           </div>
 
           {/* Service Type + Quick Add */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-white mb-3">Service Type</h2>
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+            <h2 className="text-sm font-semibold text-gray-900 mb-3">Service Type</h2>
             <div className="flex gap-2 flex-wrap">
               {Object.keys(serviceTemplates).map(s => (
                 <button
@@ -245,21 +241,21 @@ function BOQBuilder({ onBack }) {
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                     selectedService === s
                       ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
                   }`}
                 >
                   {s}
                 </button>
               ))}
             </div>
-            <div className="mt-3 pt-3 border-t border-slate-800">
-              <p className="text-xs text-slate-500 mb-2">Quick add items:</p>
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <p className="text-xs text-gray-500 mb-2">Quick add items:</p>
               <div className="flex flex-wrap gap-2">
                 {serviceTemplates[selectedService].map((t, i) => (
                   <button
                     key={i}
                     onClick={() => addItem(t)}
-                    className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2 py-1 rounded flex items-center gap-1 transition"
+                    className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 px-2 py-1 rounded flex items-center gap-1 transition"
                   >
                     <Plus size={11} /> {t.description.split('—')[0].trim()}
                   </button>
@@ -269,12 +265,12 @@ function BOQBuilder({ onBack }) {
           </div>
 
           {/* BOQ Table */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
-              <h2 className="text-sm font-semibold text-white">Bill of Quantities</h2>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+              <h2 className="text-sm font-semibold text-gray-900">Bill of Quantities</h2>
               <button
                 onClick={addBlankItem}
-                className="text-xs bg-blue-600/20 text-blue-400 border border-blue-800 px-2 py-1 rounded-lg flex items-center gap-1 hover:bg-blue-600/30 transition"
+                className="text-xs bg-blue-100 text-blue-700 border border-blue-200 px-2 py-1 rounded-lg flex items-center gap-1 hover:bg-blue-200 transition"
               >
                 <Plus size={12} /> Add Row
               </button>
@@ -282,7 +278,7 @@ function BOQBuilder({ onBack }) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ minWidth: '600px' }}>
                 <thead>
-                  <tr className="text-xs text-slate-500 border-b border-slate-800 bg-slate-900/50">
+                  <tr className="text-xs text-gray-500 border-b border-gray-200 bg-gray-50">
                     <th className="text-left px-4 py-3 font-medium w-8">#</th>
                     <th className="text-left px-4 py-3 font-medium">Description</th>
                     <th className="text-left px-4 py-3 font-medium w-20">Unit</th>
@@ -292,15 +288,15 @@ function BOQBuilder({ onBack }) {
                     <th className="px-4 py-3 w-10" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-gray-100">
                   {items.map((item, idx) => (
-                    <tr key={item.id} className="hover:bg-slate-800/30 transition">
-                      <td className="px-4 py-2 text-slate-600 text-xs">{idx + 1}</td>
+                    <tr key={item.id} className="hover:bg-gray-50 transition">
+                      <td className="px-4 py-2 text-gray-400 text-xs">{idx + 1}</td>
                       <td className="px-4 py-2">
                         <input
                           value={item.description}
                           onChange={e => updateItem(item.id, 'description', e.target.value)}
-                          className="w-full bg-transparent text-slate-300 text-sm outline-none focus:bg-slate-800 rounded px-2 py-1 transition"
+                          className="w-full bg-transparent text-gray-700 text-sm outline-none focus:bg-gray-100 rounded px-2 py-1 transition"
                           placeholder="Item description..."
                         />
                       </td>
@@ -308,7 +304,7 @@ function BOQBuilder({ onBack }) {
                         <select
                           value={item.unit}
                           onChange={e => updateItem(item.id, 'unit', e.target.value)}
-                          className="w-full bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
+                          className="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
                         >
                           {['M²','M³','Nos','RFT','Point','Lump','Kg','MT','Bags'].map(u =>
                             <option key={u} value={u}>{u}</option>
@@ -320,7 +316,7 @@ function BOQBuilder({ onBack }) {
                           type="number"
                           value={item.qty}
                           onChange={e => updateItem(item.id, 'qty', Number(e.target.value))}
-                          className="w-full bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500 text-right"
+                          className="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500 text-right"
                         />
                       </td>
                       <td className="px-4 py-2">
@@ -328,16 +324,16 @@ function BOQBuilder({ onBack }) {
                           type="number"
                           value={item.rate}
                           onChange={e => updateItem(item.id, 'rate', Number(e.target.value))}
-                          className="w-full bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500 text-right"
+                          className="w-full bg-gray-50 border border-gray-200 text-gray-700 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500 text-right"
                         />
                       </td>
-                      <td className="px-4 py-2 text-right text-white font-medium text-sm pr-4">
+                      <td className="px-4 py-2 text-right text-gray-900 font-medium text-sm pr-4">
                         ₹{formatINR(item.amount)}
                       </td>
                       <td className="px-4 py-2">
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="text-slate-600 hover:text-red-400 transition"
+                          className="text-gray-400 hover:text-red-500 transition"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -350,92 +346,92 @@ function BOQBuilder({ onBack }) {
           </div>
 
           {/* Notes */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <label className="block text-xs text-slate-400 mb-2">Terms & Notes</label>
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+            <label className="block text-xs text-gray-500 mb-2">Terms & Notes</label>
             <textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
               rows={3}
-              className="w-full bg-slate-800 border border-slate-700 text-slate-300 placeholder-slate-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition resize-none"
+              className="w-full bg-gray-50 border border-gray-200 text-gray-700 placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition resize-none"
             />
           </div>
         </div>
 
         {/* ── Right: Summary ── */}
         <div className="space-y-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 lg:sticky lg:top-6">
-            <h2 className="text-sm font-semibold text-white mb-4">Summary</h2>
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm lg:sticky lg:top-6">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">Summary</h2>
 
             <div className="space-y-3 mb-4">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Subtotal</span>
-                <span className="text-white font-medium">₹{formatINR(subtotal)}</span>
+                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-900 font-medium">₹{formatINR(subtotal)}</span>
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-400">Discount (%)</span>
+                <span className="text-gray-500">Discount (%)</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
                     value={discountPct}
                     onChange={e => setDiscountPct(Number(e.target.value))}
-                    className="w-16 bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-xs text-right focus:outline-none focus:border-blue-500"
+                    className="w-16 bg-gray-50 border border-gray-200 text-gray-700 rounded px-2 py-1 text-xs text-right focus:outline-none focus:border-blue-500"
                     min="0" max="100"
                   />
-                  <span className="text-red-400 text-sm font-medium">
+                  <span className="text-red-500 text-sm font-medium">
                     -{formatINR(discount) === '0' ? '₹0' : `₹${formatINR(discount)}`}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-400">GST (%)</span>
+                <span className="text-gray-500">GST (%)</span>
                 <div className="flex items-center gap-2">
                   <select
                     value={gstPct}
                     onChange={e => setGstPct(Number(e.target.value))}
-                    className="w-16 bg-slate-800 border border-slate-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
+                    className="w-16 bg-gray-50 border border-gray-200 text-gray-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
                   >
                     {[0, 5, 12, 18, 28].map(g =>
                       <option key={g} value={g}>{g}%</option>
                     )}
                   </select>
-                  <span className="text-slate-300 text-sm font-medium">+₹{formatINR(gst)}</span>
+                  <span className="text-gray-700 text-sm font-medium">+₹{formatINR(gst)}</span>
                 </div>
               </div>
 
-              <div className="border-t border-slate-700 pt-3 flex justify-between">
-                <span className="text-white font-semibold">Total</span>
-                <span className="text-xl font-bold text-blue-400">₹{formatINR(total)}</span>
+              <div className="border-t border-gray-200 pt-3 flex justify-between">
+                <span className="text-gray-900 font-semibold">Total</span>
+                <span className="text-xl font-bold text-blue-600">₹{formatINR(total)}</span>
               </div>
             </div>
 
-            <div className="space-y-2 pt-4 border-t border-slate-800">
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+            <div className="space-y-2 pt-4 border-t border-gray-200">
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-sm">
                 <Send size={14} /> Send to Client
               </button>
               <button
                 onClick={handleDownloadPDF}
-                className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2.5 rounded-lg transition flex items-center justify-center gap-2"
+                className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
               >
                 <Download size={14} /> Download PDF
               </button>
-              <button className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm py-2.5 rounded-lg transition flex items-center justify-center gap-2 border border-slate-700">
+              <button className="w-full bg-white hover:bg-gray-50 text-gray-700 text-sm py-2.5 rounded-lg transition flex items-center justify-center gap-2 border border-gray-300 shadow-sm">
                 <Copy size={14} /> Duplicate
               </button>
             </div>
           </div>
 
           {/* Item Count */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
             <div className="grid grid-cols-2 gap-3">
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">{items.length}</p>
-                <p className="text-xs text-slate-500">Line items</p>
+                <p className="text-2xl font-bold text-gray-900">{items.length}</p>
+                <p className="text-xs text-gray-500">Line items</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">{validDays}d</p>
-                <p className="text-xs text-slate-500">Valid for</p>
+                <p className="text-2xl font-bold text-gray-900">{validDays}d</p>
+                <p className="text-xs text-gray-500">Valid for</p>
               </div>
             </div>
           </div>
@@ -460,17 +456,17 @@ export default function QuotationPage() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gray-50 min-h-screen p-6">
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Quotations</h1>
-          <p className="text-slate-400 text-sm mt-0.5">BOQ builder & quotation management</p>
+          <h1 className="text-xl font-bold text-gray-900">Quotations</h1>
+          <p className="text-gray-500 text-sm mt-0.5">BOQ builder & quotation management</p>
         </div>
         <button
           onClick={() => setView('create')}
-          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm"
         >
           <Plus size={14} /> New Quotation
         </button>
@@ -479,42 +475,42 @@ export default function QuotationPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Sent',   value: '24',       sub: 'This financial year', color: 'bg-blue-600'   },
-          { label: 'Approved',     value: '14',        sub: '58% approval rate',  color: 'bg-green-600'  },
-          { label: 'Pending',      value: '6',         sub: 'Awaiting response',  color: 'bg-amber-600'  },
-          { label: 'Total Value',  value: '₹18.2 Cr',  sub: 'All quotations',     color: 'bg-purple-600' },
+          { label: 'Total Sent',   value: '24',       sub: 'This financial year', color: 'bg-blue-500'   },
+          { label: 'Approved',     value: '14',        sub: '58% approval rate',  color: 'bg-green-500'  },
+          { label: 'Pending',      value: '6',         sub: 'Awaiting response',  color: 'bg-amber-500'  },
+          { label: 'Total Value',  value: '₹18.2 Cr',  sub: 'All quotations',     color: 'bg-purple-500' },
         ].map((s, i) => (
-          <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+          <div key={i} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className={`w-2 h-2 rounded-full ${s.color} mb-3`} />
-            <p className="text-2xl font-bold text-white">{s.value}</p>
-            <p className="text-sm text-slate-400 mt-0.5">{s.label}</p>
-            <p className="text-xs text-slate-600 mt-1">{s.sub}</p>
+            <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+            <p className="text-sm text-gray-600 mt-0.5">{s.label}</p>
+            <p className="text-xs text-gray-400 mt-1">{s.sub}</p>
           </div>
         ))}
       </div>
 
       {/* Search */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 flex-1 max-w-sm">
-          <Search size={14} className="text-slate-500" />
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 flex-1 max-w-sm shadow-sm">
+          <Search size={14} className="text-gray-400" />
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search quotations..."
-            className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"
+            className="bg-transparent text-sm text-gray-900 placeholder-gray-400 outline-none w-full"
           />
         </div>
-        <button className="flex items-center gap-1.5 text-xs bg-slate-900 border border-slate-800 text-slate-400 px-3 py-2 rounded-lg">
+        <button className="flex items-center gap-1.5 text-xs bg-white border border-gray-200 text-gray-600 px-3 py-2 rounded-lg shadow-sm hover:bg-gray-50">
           <Filter size={13} /> Filter
         </button>
       </div>
 
       {/* Quotations Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm" style={{ minWidth: '700px' }}>
             <thead>
-              <tr className="text-xs text-slate-500 border-b border-slate-800">
+              <tr className="text-xs text-gray-500 border-b border-gray-200 bg-gray-50">
                 <th className="text-left px-5 py-3 font-medium">Quote ID</th>
                 <th className="text-left px-5 py-3 font-medium">Client</th>
                 <th className="text-left px-5 py-3 font-medium">Project</th>
@@ -525,19 +521,19 @@ export default function QuotationPage() {
                 <th className="text-left px-5 py-3 font-medium">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-gray-100">
               {filtered.map((q) => (
-                <tr key={q.id} className="hover:bg-slate-800/50 transition cursor-pointer">
-                  <td className="px-5 py-4 text-blue-400 font-medium">{q.id}</td>
-                  <td className="px-5 py-4 text-white font-medium">{q.client}</td>
-                  <td className="px-5 py-4 text-slate-400 text-xs max-w-40 truncate">{q.project}</td>
+                <tr key={q.id} className="hover:bg-gray-50 transition cursor-pointer">
+                  <td className="px-5 py-4 text-blue-600 font-medium">{q.id}</td>
+                  <td className="px-5 py-4 text-gray-900 font-medium">{q.client}</td>
+                  <td className="px-5 py-4 text-gray-500 text-xs max-w-40 truncate">{q.project}</td>
                   <td className="px-5 py-4">
-                    <span className="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200">
                       {q.service}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-white font-medium">{q.amount}</td>
-                  <td className="px-5 py-4 text-slate-400 text-xs">{q.date}</td>
+                  <td className="px-5 py-4 text-gray-900 font-medium">{q.amount}</td>
+                  <td className="px-5 py-4 text-gray-500 text-xs">{q.date}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-1.5">
                       <StatusIcon status={q.status} />
@@ -546,13 +542,13 @@ export default function QuotationPage() {
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <button className="text-slate-500 hover:text-blue-400 transition">
+                      <button className="text-gray-400 hover:text-blue-600 transition">
                         <Eye size={14} />
                       </button>
-                      <button className="text-slate-500 hover:text-blue-400 transition">
+                      <button className="text-gray-400 hover:text-blue-600 transition">
                         <Edit3 size={14} />
                       </button>
-                      <button className="text-slate-500 hover:text-blue-400 transition">
+                      <button className="text-gray-400 hover:text-blue-600 transition">
                         <Copy size={14} />
                       </button>
                       <button
@@ -565,7 +561,7 @@ export default function QuotationPage() {
                             { description: q.project, unit: 'Lump', qty: 1, rate: 0, amount: 0 }
                           ],
                         })}
-                        className="text-slate-500 hover:text-green-400 transition"
+                        className="text-gray-400 hover:text-green-600 transition"
                         title="Download PDF"
                       >
                         <Download size={14} />
