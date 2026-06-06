@@ -1,18 +1,48 @@
 import { useState } from 'react'
 import {
-   Plus, Search,  MapPin,
+  Plus, Search, MapPin,
   Calendar, Users, ChevronRight,
-  CheckSquare,  AlertTriangle, TrendingUp,
-  Building2, Camera,  Flag,
+  CheckSquare, AlertTriangle, TrendingUp,
+  Building2, Camera, Flag,
   Edit3, ArrowLeft, Phone, Mail, Download,
   LayoutGrid, List, Kanban,
-  ZoomIn, X, ChevronLeft, 
-  IndianRupee,  Wrench, 
-  CloudRain, Sun, 
-  CheckCircle2, 
+  ZoomIn, X, ChevronLeft,
+  IndianRupee, Wrench,
+  CloudRain, Sun,
+  CheckCircle2,
   Upload, Maximize2
 } from 'lucide-react'
-import { generateProjectReportPDF } from '../../utils/pdfExport'
+
+// ======================= LIGHT NEON DESIGN TOKENS =======================
+const T = {
+  bg: '#F0F4F8',
+  surface: 'rgba(255, 255, 255, 0.85)',
+  surfaceAlt: 'rgba(240, 248, 255, 0.6)',
+  border: 'rgba(0, 150, 255, 0.3)',
+  borderStrong: 'rgba(0, 150, 255, 0.5)',
+  text: '#1E293B',
+  textMid: '#334155',
+  textMuted: '#5B6B8C',
+  primary: '#0EA5E9',
+  primaryLight: 'rgba(14, 165, 233, 0.1)',
+  accent: '#D946EF',
+  accentLight: 'rgba(217, 70, 239, 0.1)',
+  positive: '#10B981',
+  positiveLight: 'rgba(16, 185, 129, 0.1)',
+  warning: '#F59E0B',
+  warningLight: 'rgba(245, 158, 11, 0.1)',
+  danger: '#EF4444',
+  dangerLight: 'rgba(239, 68, 68, 0.1)',
+}
+
+const card = {
+  background: T.surface,
+  backdropFilter: 'blur(12px)',
+  borderRadius: '24px',
+  border: `1px solid ${T.border}`,
+  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(14, 165, 233, 0.2) inset, 0 0 12px rgba(14, 165, 233, 0.15)',
+  transition: 'all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1)',
+}
 
 // ── Site Photos Mock Data ──────────────────────────────────
 const sitePhotos = {
@@ -359,129 +389,75 @@ const formatINR = (n) => {
 
 const StatusBadge = ({ status }) => {
   const map = {
-    'on-track':    { label:'On Track',    cls:'bg-green-900/40 text-green-400 border-green-800' },
-    'at-risk':     { label:'At Risk',     cls:'bg-amber-900/40 text-amber-400 border-amber-800' },
-    'delayed':     { label:'Delayed',     cls:'bg-red-900/40   text-red-400   border-red-800'   },
-    'completed':   { label:'Completed',   cls:'bg-blue-900/40  text-blue-400  border-blue-800'  },
-    'in-progress': { label:'In Progress', cls:'bg-blue-900/40  text-blue-400  border-blue-800'  },
-    'pending':     { label:'Pending',     cls:'bg-slate-800    text-slate-400 border-slate-700' },
-    'blocked':     { label:'Blocked',     cls:'bg-red-900/40   text-red-400   border-red-800'   },
-    'done':        { label:'Done',        cls:'bg-green-900/40 text-green-400 border-green-800' },
-    'open':        { label:'Open',        cls:'bg-red-900/40   text-red-400   border-red-800'   },
-    'resolved':    { label:'Resolved',    cls:'bg-green-900/40 text-green-400 border-green-800' },
+    'on-track':    { label:'On Track',    color:T.positive, bg:T.positiveLight },
+    'at-risk':     { label:'At Risk',     color:T.warning,  bg:T.warningLight },
+    'delayed':     { label:'Delayed',     color:T.danger,   bg:T.dangerLight },
+    'completed':   { label:'Completed',   color:T.primary,  bg:T.primaryLight },
+    'in-progress': { label:'In Progress', color:T.primary,  bg:T.primaryLight },
+    'pending':     { label:'Pending',     color:T.textMuted,bg:T.surfaceAlt },
+    'blocked':     { label:'Blocked',     color:T.danger,   bg:T.dangerLight },
+    'done':        { label:'Done',        color:T.positive, bg:T.positiveLight },
+    'open':        { label:'Open',        color:T.danger,   bg:T.dangerLight },
+    'resolved':    { label:'Resolved',    color:T.positive, bg:T.positiveLight },
   }
-  const { label, cls } = map[status] || map['pending']
-  return <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cls}`}>{label}</span>
+  const { label, color, bg } = map[status] || map['pending']
+  return (
+    <span style={{ fontSize:10, fontWeight:700, padding:'2px 10px', borderRadius:40, background:bg, color, border:`1px solid ${color}40` }}>
+      {label}
+    </span>
+  )
 }
 
 const TypeBadge = ({ type }) => {
   const colors = {
-    Civil:      'bg-blue-900/40   text-blue-400',
-    Interior:   'bg-purple-900/40 text-purple-400',
-    MEP:        'bg-teal-900/40   text-teal-400',
-    Renovation: 'bg-amber-900/40  text-amber-400',
-    Structural: 'bg-orange-900/40 text-orange-400',
+    Civil:      { bg:T.primaryLight,      color:T.primary },
+    Interior:   { bg:T.accentLight,       color:T.accent },
+    MEP:        { bg: T.positiveLight,    color:T.positive },
+    Renovation: { bg:T.warningLight,      color:T.warning },
+    Structural: { bg: T.dangerLight,      color:T.danger },
   }
+  const { bg, color } = colors[type] || { bg:T.surfaceAlt, color:T.textMuted }
   return (
-    <span className={`text-xs px-2 py-0.5 rounded font-medium ${colors[type] || 'bg-slate-800 text-slate-400'}`}>
+    <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:8, background:bg, color }}>
       {type}
     </span>
   )
 }
 
 const PriorityDot = ({ priority }) => {
-  const colors = { high:'bg-red-500', medium:'bg-amber-500', low:'bg-green-500' }
-  return <span className={`w-2 h-2 rounded-full shrink-0 ${colors[priority]}`}/>
+  const colors = { high:T.danger, medium:T.warning, low:T.positive }
+  return <span style={{ width:8, height:8, borderRadius:'50%', background:colors[priority], display:'inline-block' }} />
 }
-
-// const MaterialStatus = ({ status }) => {
-//   const map = {
-//     ok:  { label:'Sufficient',   cls:'bg-green-900/40 text-green-400 border-green-800' },
-//     low: { label:'Low Stock',    cls:'bg-amber-900/40 text-amber-400 border-amber-800' },
-//     out: { label:'Out of Stock', cls:'bg-red-900/40   text-red-400   border-red-800'   },
-//   }
-//   const { label, cls } = map[status] || map.ok
-//   return <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${cls}`}>{label}</span>
-// }
 
 // ── Photo Lightbox ─────────────────────────────────────────
 function PhotoLightbox({ photos, initialIndex, onClose }) {
   const [current, setCurrent] = useState(initialIndex)
-
   const prev = () => setCurrent(i => (i - 1 + photos.length) % photos.length)
   const next = () => setCurrent(i => (i + 1) % photos.length)
-
   const photo = photos[current]
-
   return (
-    <div
-      className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center"
-      onClick={onClose}
-    >
-      <div className="relative max-w-4xl w-full mx-4" onClick={e => e.stopPropagation()}>
-
-        {/* Close */}
-        <button
-          onClick={onClose}
-          className="absolute -top-12 right-0 text-white/60 hover:text-white transition"
-        >
-          <X size={24}/>
-        </button>
-
-        {/* Image */}
-        <div className="relative rounded-2xl overflow-hidden bg-slate-900">
-          <img
-            src={photo.url}
-            alt={photo.caption}
-            className="w-full max-h-[70vh] object-cover"
-          />
-
-          {/* Caption overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-            <p className="text-white font-medium text-sm">{photo.caption}</p>
-            <div className="flex items-center gap-3 mt-1">
-              <span className="text-white/60 text-xs">{photo.date}</span>
-              <span className="text-white/60 text-xs">·</span>
-              <span className="text-white/60 text-xs">{photo.category}</span>
-              <span className="text-white/60 text-xs">·</span>
-              <span className="text-white/60 text-xs">by {photo.uploader}</span>
+    <div style={{ position:'fixed', inset:0, zIndex:50, background:'rgba(0,0,0,0.9)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center' }} onClick={onClose}>
+      <div style={{ position:'relative', maxWidth:'90vw', maxHeight:'90vh' }} onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} style={{ position:'absolute', top:-40, right:0, background:'none', border:'none', color:'#fff', cursor:'pointer' }}><X size={24}/></button>
+        <div style={{ borderRadius:24, overflow:'hidden', boxShadow:'0 0 30px rgba(0,150,255,0.5)' }}>
+          <img src={photo.url} alt={photo.caption} style={{ width:'auto', maxHeight:'70vh', objectFit:'contain' }} />
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', padding:16 }}>
+            <p style={{ color:'#fff', fontWeight:600, fontSize:14 }}>{photo.caption}</p>
+            <div style={{ display:'flex', gap:12, marginTop:4, fontSize:11, color:'rgba(255,255,255,0.7)' }}>
+              <span>{photo.date}</span><span>·</span><span>{photo.category}</span><span>·</span><span>{photo.uploader}</span>
             </div>
           </div>
-
-          {/* Nav arrows */}
-          <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition"
-          >
-            <ChevronLeft size={20}/>
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center text-white transition"
-          >
-            <ChevronRight size={20}/>
-          </button>
         </div>
-
-        {/* Thumbnails */}
-        <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+        <button onClick={prev} style={{ position:'absolute', left:-48, top:'50%', transform:'translateY(-50%)', background:'rgba(0,0,0,0.5)', border:'none', borderRadius:'50%', width:40, height:40, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'#fff' }}><ChevronLeft size={20}/></button>
+        <button onClick={next} style={{ position:'absolute', right:-48, top:'50%', transform:'translateY(-50%)', background:'rgba(0,0,0,0.5)', border:'none', borderRadius:'50%', width:40, height:40, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'#fff' }}><ChevronRight size={20}/></button>
+        <div style={{ display:'flex', gap:8, marginTop:16, overflowX:'auto', justifyContent:'center', paddingBottom:8 }}>
           {photos.map((p, i) => (
-            <button
-              key={p.id}
-              onClick={() => setCurrent(i)}
-              className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition ${
-                i === current ? 'border-blue-500' : 'border-transparent opacity-50 hover:opacity-80'
-              }`}
-            >
-              <img src={p.url} alt="" className="w-full h-full object-cover"/>
+            <button key={p.id} onClick={() => setCurrent(i)} style={{ width:64, height:48, borderRadius:8, overflow:'hidden', border: i===current ? `2px solid ${T.primary}` : '2px solid transparent', opacity: i===current ? 1 : 0.5 }}>
+              <img src={p.url} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
             </button>
           ))}
         </div>
-
-        {/* Counter */}
-        <p className="text-center text-white/40 text-xs mt-2">
-          {current + 1} / {photos.length}
-        </p>
+        <p style={{ textAlign:'center', color:'rgba(255,255,255,0.5)', fontSize:11, marginTop:8 }}>{current+1} / {photos.length}</p>
       </div>
     </div>
   )
@@ -491,118 +467,64 @@ function PhotoLightbox({ photos, initialIndex, onClose }) {
 function PhotoGallery({ projectId }) {
   const [lightboxIndex, setLightboxIndex] = useState(null)
   const [activeCategory, setActiveCategory] = useState('All')
-
   const photos = sitePhotos[projectId] || []
   const categories = ['All', ...new Set(photos.map(p => p.category))]
   const filtered = activeCategory === 'All' ? photos : photos.filter(p => p.category === activeCategory)
 
   if (photos.length === 0) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-12 text-center">
-        <Camera size={40} className="text-slate-600 mx-auto mb-3"/>
-        <p className="text-slate-400 font-medium">No photos yet</p>
-        <p className="text-slate-600 text-sm mt-1">Site supervisor can upload photos from the site module</p>
-        <button className="mt-4 text-xs bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 mx-auto">
-          <Upload size={13}/> Upload Photos
-        </button>
+      <div style={{ ...card, padding:48, textAlign:'center' }}>
+        <Camera size={40} style={{ color:T.textMuted, margin:'0 auto 12px auto' }} />
+        <p style={{ fontWeight:600, color:T.textMuted }}>No photos yet</p>
+        <p style={{ fontSize:12, color:T.textMuted, marginTop:4 }}>Site supervisor can upload photos</p>
+        <button style={{ marginTop:16, background:T.primary, border:'none', borderRadius:40, padding:'6px 16px', color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer' }}><Upload size={13} style={{ display:'inline', marginRight:6 }} /> Upload Photos</button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-
-      {/* Category Filter + Upload */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex gap-2 flex-wrap">
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8 }}>
+        <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
           {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                activeCategory === cat
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-800 text-slate-400 border border-slate-700 hover:text-white'
-              }`}
-            >
-              {cat} {cat === 'All' ? `(${photos.length})` : `(${photos.filter(p=>p.category===cat).length})`}
+            <button key={cat} onClick={() => setActiveCategory(cat)} style={{ padding:'4px 12px', borderRadius:40, fontSize:11, fontWeight:600, background: activeCategory===cat ? T.primary : T.surfaceAlt, color: activeCategory===cat ? '#fff' : T.textMid, border: `1px solid ${activeCategory===cat ? T.primary : T.border}`, cursor:'pointer' }}>
+              {cat} ({cat==='All' ? photos.length : photos.filter(p=>p.category===cat).length})
             </button>
           ))}
         </div>
-        <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
-          <Upload size={13}/> Upload
-        </button>
+        <button style={{ background:T.primary, border:'none', borderRadius:40, padding:'4px 12px', color:'#fff', fontSize:11, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}><Upload size={12}/> Upload</button>
       </div>
 
-      {/* Featured photo (large) */}
+      {/* Featured large photo */}
       {filtered.length > 0 && (
-        <div
-          className="relative rounded-2xl overflow-hidden cursor-pointer group h-72"
-          onClick={() => setLightboxIndex(photos.indexOf(filtered[0]))}
-        >
-          <img
-            src={filtered[0].url}
-            alt={filtered[0].caption}
-            className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"/>
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <p className="text-white font-semibold">{filtered[0].caption}</p>
-            <div className="flex items-center gap-3 mt-1">
-              <span className="text-white/60 text-xs">{filtered[0].date}</span>
-              <span className="text-white/60 text-xs">by {filtered[0].uploader}</span>
+        <div style={{ position:'relative', borderRadius:24, overflow:'hidden', cursor:'pointer', height:280 }} onClick={() => setLightboxIndex(photos.indexOf(filtered[0]))}>
+          <img src={filtered[0].url} alt={filtered[0].caption} style={{ width:'100%', height:'100%', objectFit:'cover', transition:'transform 0.3s' }} />
+          <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }} />
+          <div style={{ position:'absolute', bottom:16, left:16 }}>
+            <p style={{ color:'#fff', fontWeight:600, marginBottom:4 }}>{filtered[0].caption}</p>
+            <div style={{ display:'flex', gap:12, fontSize:11, color:'rgba(255,255,255,0.7)' }}>
+              <span>{filtered[0].date}</span> <span>by {filtered[0].uploader}</span>
             </div>
           </div>
-          <div className="absolute top-3 right-3 bg-black/50 rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition">
-            <Maximize2 size={16} className="text-white"/>
-          </div>
-          <div className="absolute top-3 left-3">
-            <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-lg font-medium">
-              {filtered[0].category}
-            </span>
-          </div>
+          <div style={{ position:'absolute', top:12, left:12 }}><span style={{ background:T.primary, borderRadius:40, padding:'2px 10px', fontSize:10, fontWeight:600, color:'#fff' }}>{filtered[0].category}</span></div>
+          <div style={{ position:'absolute', top:12, right:12, background:'rgba(0,0,0,0.5)', borderRadius:'50%', padding:6 }}><Maximize2 size={14} color="#fff"/></div>
         </div>
       )}
 
       {/* Grid */}
       {filtered.length > 1 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {filtered.slice(1).map((photo) => (
-            <div
-              key={photo.id}
-              className="relative rounded-xl overflow-hidden cursor-pointer group aspect-square"
-              onClick={() => setLightboxIndex(photos.indexOf(photo))}
-            >
-              <img
-                src={photo.url}
-                alt={photo.caption}
-                className="w-full h-full object-cover transition duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition"/>
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                <ZoomIn size={20} className="text-white"/>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition">
-                <p className="text-white text-xs truncate">{photo.caption}</p>
-              </div>
-              <div className="absolute top-2 left-2">
-                <span className="bg-black/50 text-white text-xs px-1.5 py-0.5 rounded font-medium">
-                  {photo.category}
-                </span>
-              </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(140px,1fr))', gap:12 }}>
+          {filtered.slice(1).map(photo => (
+            <div key={photo.id} style={{ position:'relative', aspectRatio:'1/1', borderRadius:16, overflow:'hidden', cursor:'pointer' }} onClick={() => setLightboxIndex(photos.indexOf(photo))}>
+              <img src={photo.url} alt="" style={{ width:'100%', height:'100%', objectFit:'cover', transition:'transform 0.3s' }} />
+              <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.2)', display:'flex', alignItems:'center', justifyContent:'center', opacity:0, transition:'opacity 0.2s' }}><ZoomIn size={20} color="#fff"/></div>
+              <div style={{ position:'absolute', top:6, left:6 }}><span style={{ background:'rgba(0,0,0,0.6)', borderRadius:40, padding:'2px 6px', fontSize:9, color:'#fff' }}>{photo.category}</span></div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Lightbox */}
-      {lightboxIndex !== null && (
-        <PhotoLightbox
-          photos={photos}
-          initialIndex={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-        />
-      )}
+      {lightboxIndex !== null && <PhotoLightbox photos={photos} initialIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} />}
     </div>
   )
 }
@@ -614,43 +536,38 @@ function ProjectFinancials({ project }) {
   const spentPct       = Math.round((project.expenses / project.value)    * 100)
 
   return (
-    <div className="space-y-4">
-
-      {/* KPI Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px,1fr))', gap:12 }}>
         {[
-          { label:'Contract Value', value:formatINR(project.value),    sub:'Total contract',          color:'bg-blue-600'   },
-          { label:'Invoiced',       value:formatINR(project.invoiced), sub:`${Math.round((project.invoiced/project.value)*100)}% of contract`, color:'bg-purple-600' },
-          { label:'Received',       value:formatINR(project.received), sub:`${collectionRate}% collected`, color:'bg-green-600' },
-          { label:'Net Profit',     value:formatINR(project.profit),   sub:`${profitMargin}% margin`,     color:'bg-amber-600' },
+          { label:'Contract Value', value:formatINR(project.value), sub:'Total contract', icon:IndianRupee, color:T.primary },
+          { label:'Invoiced',       value:formatINR(project.invoiced), sub:`${Math.round((project.invoiced/project.value)*100)}% of contract`, icon:IndianRupee, color:T.accent },
+          { label:'Received',       value:formatINR(project.received), sub:`${collectionRate}% collected`, icon:IndianRupee, color:T.positive },
+          { label:'Net Profit',     value:formatINR(project.profit), sub:`${profitMargin}% margin`, icon:IndianRupee, color:T.warning },
         ].map((k,i) => (
-          <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-            <div className={`w-8 h-8 rounded-lg ${k.color} flex items-center justify-center mb-2`}>
-              <IndianRupee size={15} className="text-white"/>
-            </div>
-            <p className="text-lg font-bold text-white">{k.value}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{k.label}</p>
-            <p className="text-xs text-slate-600 mt-0.5">{k.sub}</p>
+          <div key={i} style={{ ...card, padding:16 }}>
+            <div style={{ width:32, height:32, borderRadius:12, background:`${k.color}20`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:12 }}><IndianRupee size={16} color={k.color} /></div>
+            <p style={{ fontSize:20, fontWeight:800, color:T.text }}>{k.value}</p>
+            <p style={{ fontSize:11, color:T.textMuted, marginTop:2 }}>{k.label}</p>
+            <p style={{ fontSize:10, color:T.textMuted, marginTop:2 }}>{k.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Progress Bars */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-        <h3 className="text-sm font-semibold text-white mb-4">Financial Progress</h3>
-        <div className="space-y-4">
+      <div style={{ ...card, padding:20 }}>
+        <h3 style={{ fontSize:13, fontWeight:800, color:T.text, marginBottom:16 }}>Financial Progress</h3>
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
           {[
-            { label:'Amount Invoiced',  value:project.invoiced, total:project.value, color:'bg-blue-500',   pct:Math.round((project.invoiced/project.value)*100)   },
-            { label:'Amount Received',  value:project.received, total:project.value, color:'bg-green-500',  pct:Math.round((project.received/project.value)*100)   },
-            { label:'Amount Spent',     value:project.expenses, total:project.value, color:'bg-amber-500',  pct:spentPct                                           },
+            { label:'Amount Invoiced',  value:project.invoiced, total:project.value, color:T.primary,   pct:Math.round((project.invoiced/project.value)*100) },
+            { label:'Amount Received',  value:project.received, total:project.value, color:T.positive,  pct:Math.round((project.received/project.value)*100) },
+            { label:'Amount Spent',     value:project.expenses, total:project.value, color:T.warning,   pct:spentPct },
           ].map((bar,i) => (
             <div key={i}>
-              <div className="flex justify-between text-xs mb-1.5">
-                <span className="text-slate-400">{bar.label}</span>
-                <span className="text-white font-medium">{formatINR(bar.value)} <span className="text-slate-500">({bar.pct}%)</span></span>
+              <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, marginBottom:6 }}>
+                <span style={{ color:T.textMuted }}>{bar.label}</span>
+                <span style={{ fontWeight:700, color:T.text }}>{formatINR(bar.value)} ({bar.pct}%)</span>
               </div>
-              <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${bar.color} transition-all`} style={{ width:`${bar.pct}%` }}/>
+              <div style={{ height:6, background:T.border, borderRadius:4, overflow:'hidden' }}>
+                <div style={{ width:`${bar.pct}%`, height:'100%', background:bar.color, borderRadius:4, boxShadow:`0 0 4px ${bar.color}` }} />
               </div>
             </div>
           ))}
@@ -663,233 +580,151 @@ function ProjectFinancials({ project }) {
 // ── Full Project Detail Page ───────────────────────────────
 function ProjectDetail({ project, onBack }) {
   const [activeTab, setActiveTab] = useState('overview')
-
   const doneTasks      = project.tasks.filter(t => t.status === 'done').length
   const openIssues     = project.issues.filter(i => i.status === 'open').length
   const doneMilestones = project.milestones.filter(m => m.done).length
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div style={{ display:'flex', flexDirection:'column', gap:24, animation:'fadeSlideUp 0.4s ease-out' }}>
 
-      {/* ── Hero Banner ── */}
-      <div className="relative rounded-2xl overflow-hidden">
+      {/* Hero Banner */}
+      <div style={{ position:'relative', borderRadius:28, overflow:'hidden' }}>
         {sitePhotos[project.id]?.[0] ? (
-          <img
-            src={sitePhotos[project.id][0].url}
-            alt={project.name}
-            className="w-full h-52 object-cover"
-          />
+          <img src={sitePhotos[project.id][0].url} alt={project.name} style={{ width:'100%', height:240, objectFit:'cover' }} />
         ) : (
-          <div className="w-full h-52 bg-gradient-to-r from-blue-900 to-purple-900"/>
+          <div style={{ width:'100%', height:240, background:`linear-gradient(135deg, ${T.primary}, ${T.accent})` }} />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"/>
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.7), transparent)' }} />
 
-        {/* Back button */}
-        <button
-          onClick={onBack}
-          className="absolute top-4 left-4 flex items-center gap-1.5 bg-black/40 hover:bg-black/60 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-sm transition"
-        >
-          <ArrowLeft size={14}/> All Projects
-        </button>
+        <button onClick={onBack} style={{ position:'absolute', top:16, left:16, background:'rgba(0,0,0,0.5)', backdropFilter:'blur(4px)', border:'none', borderRadius:40, padding:'6px 14px', color:'#fff', fontSize:11, fontWeight:600, display:'flex', alignItems:'center', gap:6, cursor:'pointer' }}><ArrowLeft size={14}/> All Projects</button>
 
-        {/* Action buttons */}
-        <div className="absolute top-4 right-4 flex gap-2">
-          <button
-            onClick={() => generateProjectReportPDF(project)}
-            className="flex items-center gap-1.5 bg-green-600/80 hover:bg-green-600 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-sm transition"
-          >
-            <Download size={13}/> Export PDF
-          </button>
-          <button className="flex items-center gap-1.5 bg-black/40 hover:bg-black/60 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-sm transition">
-            <Edit3 size={13}/> Edit
-          </button>
-          <button className="flex items-center gap-1.5 bg-blue-600/80 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded-lg backdrop-blur-sm transition">
-            <Camera size={13}/> DPR
-          </button>
+        <div style={{ position:'absolute', top:16, right:16, display:'flex', gap:8 }}>
+          <button style={{ background:T.positive, border:'none', borderRadius:40, padding:'6px 12px', fontSize:11, fontWeight:600, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}><Download size={13}/> Export PDF</button>
+          <button style={{ background:'rgba(0,0,0,0.5)', backdropFilter:'blur(4px)', border:'none', borderRadius:40, padding:'6px 12px', fontSize:11, fontWeight:600, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}><Edit3 size={13}/> Edit</button>
+          <button style={{ background:T.primary, border:'none', borderRadius:40, padding:'6px 12px', fontSize:11, fontWeight:600, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}><Camera size={13}/> DPR</button>
         </div>
 
-        {/* Project title overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-5">
-          <div className="flex items-end justify-between flex-wrap gap-3">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <TypeBadge type={project.type}/>
-                <StatusBadge status={project.status}/>
-              </div>
-              <h1 className="text-2xl font-bold text-white">{project.name}</h1>
-              <div className="flex items-center gap-4 mt-1 flex-wrap">
-                <span className="text-white/60 text-xs flex items-center gap-1">
-                  <Building2 size={11}/> {project.client}
-                </span>
-                <span className="text-white/60 text-xs flex items-center gap-1">
-                  <MapPin size={11}/> {project.site}
-                </span>
-                <span className="text-white/60 text-xs flex items-center gap-1">
-                  <Calendar size={11}/> {project.startDate} → {project.endDate}
-                </span>
-              </div>
+        <div style={{ position:'absolute', bottom:16, left:16, right:16, display:'flex', justifyContent:'space-between', alignItems:'flex-end', flexWrap:'wrap', gap:12 }}>
+          <div>
+            <div style={{ display:'flex', gap:8, marginBottom:8 }}>
+              <TypeBadge type={project.type} />
+              <StatusBadge status={project.status} />
             </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-white">{project.valueStr}</p>
-              <p className="text-white/40 text-xs">Contract Value</p>
+            <h1 style={{ fontSize:22, fontWeight:800, color:'#fff', marginBottom:4 }}>{project.name}</h1>
+            <div style={{ display:'flex', gap:16, fontSize:11, color:'rgba(255,255,255,0.7)', flexWrap:'wrap' }}>
+              <span style={{ display:'flex', alignItems:'center', gap:4 }}><Building2 size={12}/> {project.client}</span>
+              <span><MapPin size={12} style={{ display:'inline', marginRight:4 }} />{project.site}</span>
+              <span><Calendar size={12} style={{ display:'inline', marginRight:4 }} />{project.startDate} → {project.endDate}</span>
             </div>
+          </div>
+          <div style={{ textAlign:'right' }}>
+            <p style={{ fontSize:24, fontWeight:800, color:'#fff' }}>{project.valueStr}</p>
+            <p style={{ fontSize:11, color:'rgba(255,255,255,0.5)' }}>Contract Value</p>
           </div>
         </div>
       </div>
 
-      {/* ── Quick Stats Row ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* Quick Stats Row */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(120px,1fr))', gap:12 }}>
         {[
-          { label:'Progress',    value:`${project.progress}%`,              icon:TrendingUp,    color:'text-blue-400'   },
-          { label:'Tasks Done',  value:`${doneTasks}/${project.tasks.length}`,icon:CheckSquare, color:'text-green-400'  },
-          { label:'Milestones',  value:`${doneMilestones}/${project.milestones.length}`,icon:Flag, color:'text-purple-400'},
-          { label:'Team',        value:`${project.team} workers`,            icon:Users,         color:'text-teal-400'   },
-          { label:'Open Issues', value:`${openIssues} issues`,               icon:AlertTriangle, color:'text-red-400'    },
-          { label:'Stage',       value:project.stage,                        icon:Wrench,        color:'text-amber-400'  },
+          { label:'Progress',    value:`${project.progress}%`,              icon:TrendingUp,    color:T.primary },
+          { label:'Tasks Done',  value:`${doneTasks}/${project.tasks.length}`,icon:CheckSquare, color:T.positive },
+          { label:'Milestones',  value:`${doneMilestones}/${project.milestones.length}`,icon:Flag, color:T.accent },
+          { label:'Team',        value:`${project.team} workers`,            icon:Users,         color:T.warning },
+          { label:'Open Issues', value:`${openIssues} issues`,               icon:AlertTriangle, color:T.danger },
+          { label:'Stage',       value:project.stage,                        icon:Wrench,        color:T.textMid },
         ].map((s,i) => (
-          <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
-            <s.icon size={18} className={`${s.color} mx-auto mb-1`}/>
-            <p className={`text-sm font-bold ${s.color}`}>{s.value}</p>
-            <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
+          <div key={i} style={{ ...card, padding:12, textAlign:'center' }}>
+            <s.icon size={18} color={s.color} style={{ margin:'0 auto 6px auto' }} />
+            <p style={{ fontSize:16, fontWeight:800, color:s.color }}>{s.value}</p>
+            <p style={{ fontSize:10, color:T.textMuted }}>{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-        <div className="flex justify-between text-xs mb-2">
-          <span className="text-slate-400">Overall Progress</span>
-          <span className="text-white font-bold">{project.progress}%</span>
+      <div style={{ ...card, padding:16 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, marginBottom:6 }}>
+          <span style={{ color:T.textMuted }}>Overall Progress</span>
+          <span style={{ fontWeight:800, color:T.text }}>{project.progress}%</span>
         </div>
-        <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all ${
-              project.status === 'delayed'  ? 'bg-gradient-to-r from-red-600   to-red-400'   :
-              project.status === 'at-risk'  ? 'bg-gradient-to-r from-amber-600 to-amber-400' :
-                                              'bg-gradient-to-r from-blue-600  to-indigo-400'
-            }`}
-            style={{ width:`${project.progress}%` }}
-          />
+        <div style={{ height:8, background:T.border, borderRadius:6, overflow:'hidden' }}>
+          <div style={{ width:`${project.progress}%`, height:'100%', background: project.status==='delayed' ? T.danger : project.status==='at-risk' ? T.warning : `linear-gradient(90deg, ${T.primary}, ${T.accent})`, borderRadius:6, boxShadow:'0 0 6px #0EA5E9' }} />
         </div>
       </div>
 
-      {/* ── Tabs ── */}
-      <div className="flex gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1 overflow-x-auto">
+      {/* Tabs */}
+      <div style={{ display:'flex', gap:4, background:T.surface, backdropFilter:'blur(8px)', borderRadius:40, padding:4, border:`1px solid ${T.border}`, overflowX:'auto' }}>
         {[
-          { id:'overview',   label:'Overview'   },
+          { id:'overview',   label:'Overview' },
           { id:'photos',     label:`Photos (${(sitePhotos[project.id]||[]).length})` },
           { id:'financials', label:'Financials' },
           { id:'tasks',      label:`Tasks (${project.tasks.length})` },
           { id:'milestones', label:'Milestones' },
-          { id:'team',       label:'Team'       },
+          { id:'team',       label:'Team' },
           { id:'issues',     label:`Issues (${project.issues.length})` },
-          { id:'dpr',        label:'DPR Log'    },
-          { id:'documents',  label:'Documents'  },
+          { id:'dpr',        label:'DPR Log' },
+          { id:'documents',  label:'Documents' },
         ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap ${
-              activeTab === tab.id ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
-            }`}
-          >
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ padding:'6px 16px', borderRadius:40, fontSize:11, fontWeight:600, whiteSpace:'nowrap', background: activeTab===tab.id ? T.primary : 'transparent', color: activeTab===tab.id ? '#fff' : T.textMid, border:'none', cursor:'pointer' }}>
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* ── OVERVIEW TAB ── */}
+      {/* Tab Content */}
       {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-          {/* Project Info */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <h2 className="text-sm font-semibold text-white mb-4">Project Information</h2>
-            <p className="text-sm text-slate-400 mb-4 leading-relaxed">{project.description}</p>
-            <div className="space-y-2.5">
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+          <div style={{ ...card, padding:20 }}>
+            <h2 style={{ fontSize:13, fontWeight:800, color:T.text, marginBottom:16 }}>Project Information</h2>
+            <p style={{ fontSize:13, color:T.textMid, marginBottom:16, lineHeight:1.5 }}>{project.description}</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               {[
-                { label:'Project ID',       value:project.id          },
-                { label:'Type',             value:project.type        },
-                { label:'Area',             value:project.area        },
-                { label:'Floors',           value:project.floors      },
-                { label:'Current Stage',    value:project.stage       },
-                { label:'Start Date',       value:project.startDate   },
-                { label:'End Date',         value:project.endDate     },
-                { label:'Site Location',    value:project.site        },
-                { label:'Project Manager',  value:project.manager     },
-                { label:'Site Supervisor',  value:project.supervisor  },
+                { label:'Project ID',       value:project.id },
+                { label:'Type',             value:project.type },
+                { label:'Area',             value:project.area },
+                { label:'Floors',           value:project.floors },
+                { label:'Current Stage',    value:project.stage },
+                { label:'Start Date',       value:project.startDate },
+                { label:'End Date',         value:project.endDate },
+                { label:'Site Location',    value:project.site },
+                { label:'Project Manager',  value:project.manager },
+                { label:'Site Supervisor',  value:project.supervisor },
               ].map((row,i) => (
-                <div key={i} className="flex items-center justify-between text-sm py-1.5 border-b border-slate-800 last:border-0">
-                  <span className="text-slate-500 text-xs">{row.label}</span>
-                  <span className="text-white font-medium text-xs">{row.value}</span>
+                <div key={i} style={{ display:'flex', justifyContent:'space-between', padding:'6px 0', borderBottom: i<9 ? `1px solid ${T.border}` : 'none' }}>
+                  <span style={{ fontSize:11, color:T.textMuted }}>{row.label}</span>
+                  <span style={{ fontSize:11, fontWeight:600, color:T.text }}>{row.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Client + Latest Photo */}
-          <div className="space-y-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-              <h2 className="text-sm font-semibold text-white mb-4">Client Details</h2>
-              <div className="flex items-center gap-3 mb-4 p-3 bg-slate-800/50 rounded-xl border border-slate-800">
-                <div className="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-800 flex items-center justify-center">
-                  <Building2 size={22} className="text-blue-400"/>
-                </div>
-                <div>
-                  <p className="text-white font-semibold">{project.client}</p>
-                  <p className="text-slate-400 text-xs">{project.clientContact}</p>
-                </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+            <div style={{ ...card, padding:20 }}>
+              <h2 style={{ fontSize:13, fontWeight:800, color:T.text, marginBottom:16 }}>Client Details</h2>
+              <div style={{ display:'flex', alignItems:'center', gap:12, padding:12, background:T.surfaceAlt, borderRadius:16, marginBottom:16 }}>
+                <div style={{ width:48, height:48, borderRadius:16, background:`${T.primary}20`, display:'flex', alignItems:'center', justifyContent:'center' }}><Building2 size={24} color={T.primary} /></div>
+                <div><p style={{ fontWeight:700, color:T.text }}>{project.client}</p><p style={{ fontSize:11, color:T.textMuted }}>{project.clientContact}</p></div>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Phone size={14} className="text-slate-600 shrink-0"/>
-                  <span className="text-slate-300 text-sm flex-1">{project.clientPhone}</span>
-                  <button className="text-xs text-blue-400 hover:text-blue-300">Call</button>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail size={14} className="text-slate-600 shrink-0"/>
-                  <span className="text-slate-300 text-xs flex-1 truncate">{project.clientEmail}</span>
-                  <button className="text-xs text-blue-400 hover:text-blue-300">Email</button>
-                </div>
+              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:12 }}><Phone size={14} color={T.textMuted} /><span style={{ fontSize:12, color:T.textMid }}>{project.clientPhone}</span><button style={{ marginLeft:'auto', fontSize:10, color:T.primary, background:'none', border:'none', cursor:'pointer' }}>Call</button></div>
+                <div style={{ display:'flex', alignItems:'center', gap:12 }}><Mail size={14} color={T.textMuted} /><span style={{ fontSize:12, color:T.textMid, flex:1 }}>{project.clientEmail}</span><button style={{ fontSize:10, color:T.primary, background:'none', border:'none', cursor:'pointer' }}>Email</button></div>
               </div>
             </div>
-
-            {/* Latest site photo preview */}
             {sitePhotos[project.id]?.length > 0 && (
-              <div
-                className="relative rounded-xl overflow-hidden cursor-pointer group h-36"
-                onClick={() => setActiveTab('photos')}
-              >
-                <img
-                  src={sitePhotos[project.id][sitePhotos[project.id].length - 1].url}
-                  alt="Latest site photo"
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition"/>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <Camera size={24} className="mx-auto mb-1"/>
-                    <p className="text-xs font-medium">View {sitePhotos[project.id].length} site photos</p>
-                  </div>
-                </div>
+              <div style={{ ...card, padding:20, cursor:'pointer' }} onClick={() => setActiveTab('photos')}>
+                <img src={sitePhotos[project.id][sitePhotos[project.id].length-1].url} alt="latest" style={{ width:'100%', height:120, objectFit:'cover', borderRadius:16, marginBottom:12 }} />
+                <p style={{ textAlign:'center', fontSize:11, color:T.primary, fontWeight:600 }}>View {sitePhotos[project.id].length} site photos →</p>
               </div>
             )}
-
-            {/* Quick milestones */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-              <h3 className="text-xs font-semibold text-white mb-3">Milestone Progress</h3>
-              <div className="space-y-2">
+            <div style={{ ...card, padding:20 }}>
+              <h3 style={{ fontSize:12, fontWeight:800, color:T.text, marginBottom:12 }}>Milestone Progress</h3>
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                 {project.milestones.map((m,i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                      m.done ? 'border-green-500 bg-green-500' : 'border-slate-600'
-                    }`}>
-                      {m.done && <CheckCircle2 size={10} className="text-white"/>}
-                    </div>
-                    <span className={`text-xs flex-1 ${m.done ? 'text-slate-500 line-through' : 'text-slate-300'}`}>
-                      {m.title}
-                    </span>
-                    <span className="text-xs text-slate-600">{m.date}</span>
+                  <div key={i} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:18, height:18, borderRadius:'50%', border:`2px solid ${m.done ? T.positive : T.borderStrong}`, background:m.done ? T.positive : 'transparent', display:'flex', alignItems:'center', justifyContent:'center' }}>{m.done && <CheckCircle2 size={12} color="#fff" />}</div>
+                    <span style={{ fontSize:11, flex:1, color:m.done ? T.textMuted : T.text, textDecoration:m.done ? 'line-through' : 'none' }}>{m.title}</span>
+                    <span style={{ fontSize:10, color:T.textMuted }}>{m.date}</span>
                   </div>
                 ))}
               </div>
@@ -898,60 +733,27 @@ function ProjectDetail({ project, onBack }) {
         </div>
       )}
 
-      {/* ── PHOTOS TAB ── */}
-      {activeTab === 'photos' && (
-        <PhotoGallery projectId={project.id}/>
-      )}
-
-      {/* ── FINANCIALS TAB ── */}
-      {activeTab === 'financials' && (
-        <ProjectFinancials project={project}/>
-      )}
-
-      {/* ── TASKS TAB ── */}
+      {activeTab === 'photos' && <PhotoGallery projectId={project.id} />}
+      {activeTab === 'financials' && <ProjectFinancials project={project} />}
       {activeTab === 'tasks' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
-            <h2 className="text-sm font-semibold text-white">Task List</h2>
-            <button className="text-xs bg-blue-600/20 text-blue-400 border border-blue-800 px-2 py-1 rounded-lg flex items-center gap-1">
-              <Plus size={12}/> Add Task
-            </button>
+        <div style={{ ...card, overflow:'hidden' }}>
+          <div style={{ padding:'16px 20px', borderBottom:`1px solid ${T.border}`, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            <h2 style={{ fontSize:13, fontWeight:800, color:T.text }}>Task List</h2>
+            <button style={{ background:T.primaryLight, border:`1px solid ${T.primary}`, borderRadius:40, padding:'4px 12px', fontSize:10, fontWeight:600, color:T.primary, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}><Plus size={12}/> Add Task</button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm" style={{ minWidth:'550px' }}>
-              <thead>
-                <tr className="text-xs text-slate-500 border-b border-slate-800">
-                  <th className="text-left px-5 py-3 font-medium">Task</th>
-                  <th className="text-left px-5 py-3 font-medium">Assignee</th>
-                  <th className="text-left px-5 py-3 font-medium">Priority</th>
-                  <th className="text-left px-5 py-3 font-medium">Due</th>
-                  <th className="text-left px-5 py-3 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
+          <div style={{ overflowX:'auto' }}>
+            <table style={{ width:'100%', fontSize:12, minWidth:550, borderCollapse:'collapse' }}>
+              <thead><tr style={{ borderBottom:`1px solid ${T.border}`, color:T.textMuted, fontSize:10 }}>
+                <th style={{ textAlign:'left', padding:'10px 12px' }}>Task</th><th style={{ textAlign:'left', padding:'10px 12px' }}>Assignee</th><th style={{ textAlign:'left', padding:'10px 12px' }}>Priority</th><th style={{ textAlign:'left', padding:'10px 12px' }}>Due</th><th style={{ textAlign:'left', padding:'10px 12px' }}>Status</th>
+              </tr></thead>
+              <tbody>
                 {project.tasks.map(t => (
-                  <tr key={t.id} className="hover:bg-slate-800/50 transition">
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
-                        <PriorityDot priority={t.priority}/>
-                        <span className="text-slate-300 font-medium text-xs">{t.title}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                          {t.assignee.charAt(0)}
-                        </div>
-                        <span className="text-slate-400 text-xs">{t.assignee}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3">
-                      <span className={`text-xs font-medium capitalize ${
-                        t.priority === 'high' ? 'text-red-400' : t.priority === 'medium' ? 'text-amber-400' : 'text-green-400'
-                      }`}>{t.priority}</span>
-                    </td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{t.due}</td>
-                    <td className="px-5 py-3"><StatusBadge status={t.status}/></td>
+                  <tr key={t.id} style={{ borderBottom:`1px solid ${T.border}` }}>
+                    <td style={{ padding:'10px 12px' }}><div style={{ display:'flex', alignItems:'center', gap:6 }}><PriorityDot priority={t.priority}/><span style={{ color:T.text }}>{t.title}</span></div></td>
+                    <td style={{ padding:'10px 12px', color:T.textMid }}>{t.assignee}</td>
+                    <td style={{ padding:'10px 12px', color: t.priority==='high' ? T.danger : t.priority==='medium' ? T.warning : T.positive, fontWeight:600 }}>{t.priority}</td>
+                    <td style={{ padding:'10px 12px', color:T.textMuted }}>{t.due}</td>
+                    <td style={{ padding:'10px 12px' }}><StatusBadge status={t.status}/></td>
                   </tr>
                 ))}
               </tbody>
@@ -960,183 +762,102 @@ function ProjectDetail({ project, onBack }) {
         </div>
       )}
 
-      {/* ── MILESTONES TAB ── */}
       {activeTab === 'milestones' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm font-semibold text-white">Project Milestones</h2>
-            <button className="text-xs bg-blue-600/20 text-blue-400 border border-blue-800 px-2 py-1 rounded-lg flex items-center gap-1">
-              <Plus size={12}/> Add
-            </button>
+        <div style={{ ...card, padding:20 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:16 }}>
+            <h2 style={{ fontSize:13, fontWeight:800, color:T.text }}>Project Milestones</h2>
+            <button style={{ background:T.primaryLight, border:`1px solid ${T.primary}`, borderRadius:40, padding:'4px 12px', fontSize:10, fontWeight:600, color:T.primary, cursor:'pointer' }}><Plus size={12}/> Add</button>
           </div>
-          <div className="relative">
-            <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-slate-800"/>
-            <div className="space-y-4">
-              {project.milestones.map((m,i) => (
-                <div key={i} className="flex items-start gap-4 relative pl-12">
-                  <div className={`absolute left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                    m.done ? 'border-green-500 bg-green-500' : 'border-slate-600 bg-slate-900'
-                  }`}>
-                    {m.done && <span className="text-white text-xs font-bold">✓</span>}
-                  </div>
-                  <div className={`flex-1 p-4 rounded-xl border ${
-                    m.done ? 'border-green-900/40 bg-green-900/10' : 'border-slate-800 bg-slate-800/30'
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <p className={`text-sm font-semibold ${m.done ? 'text-green-400' : 'text-white'}`}>
-                        {m.title}
-                      </p>
-                      <span className="text-xs text-slate-500 flex items-center gap-1">
-                        <Calendar size={11}/> {m.date}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 mt-1">{m.done ? '✓ Completed' : 'Upcoming'}</p>
-                  </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+            {project.milestones.map((m,i) => (
+              <div key={i} style={{ display:'flex', gap:12, alignItems:'flex-start' }}>
+                <div style={{ width:24, height:24, borderRadius:'50%', border:`2px solid ${m.done ? T.positive : T.borderStrong}`, background:m.done ? T.positive : T.surface, display:'flex', alignItems:'center', justifyContent:'center' }}>{m.done && <span style={{ color:'#fff', fontSize:12 }}>✓</span>}</div>
+                <div style={{ flex:1, padding:12, borderRadius:16, background: m.done ? T.positiveLight : T.surfaceAlt, border:`1px solid ${m.done ? T.positive : T.border}` }}>
+                  <div style={{ display:'flex', justifyContent:'space-between' }}><span style={{ fontWeight:700, color:m.done ? T.positive : T.text }}>{m.title}</span><span style={{ fontSize:10, color:T.textMuted }}><Calendar size={10} style={{ display:'inline', marginRight:4 }} />{m.date}</span></div>
+                  <p style={{ fontSize:10, color:T.textMuted, marginTop:4 }}>{m.done ? '✓ Completed' : 'Upcoming'}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── TEAM TAB ── */}
-      {activeTab === 'team' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">
-              Team Members — {project.team} total workers
-            </h2>
-            <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
-              <Plus size={13}/> Add Member
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {project.team_members.map((m,i) => (
-              <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-800 flex items-center justify-center text-blue-400 font-bold shrink-0">
-                  {m.name.charAt(0)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{m.name}</p>
-                  <p className="text-xs text-slate-500">{m.role}</p>
-                  <p className="text-xs text-slate-600 mt-0.5">{m.phone}</p>
-                </div>
-                <button className="text-slate-500 hover:text-blue-400 transition shrink-0">
-                  <Phone size={14}/>
-                </button>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* ── ISSUES TAB ── */}
+      {activeTab === 'team' && (
+        <div>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:12 }}>
+            <h2 style={{ fontSize:13, fontWeight:800, color:T.text }}>Team Members — {project.team} total workers</h2>
+            <button style={{ background:T.primary, border:'none', borderRadius:40, padding:'4px 12px', fontSize:11, fontWeight:600, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}><Plus size={12}/> Add Member</button>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px,1fr))', gap:12 }}>
+            {project.team_members.map(m => (
+              <div key={m.name} style={{ ...card, padding:12, display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:40, height:40, borderRadius:40, background:`${T.primary}20`, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, color:T.primary }}>{m.name.charAt(0)}</div>
+                <div style={{ flex:1 }}><p style={{ fontWeight:700, color:T.text }}>{m.name}</p><p style={{ fontSize:10, color:T.textMuted }}>{m.role}</p><p style={{ fontSize:10, color:T.textMuted }}>{m.phone}</p></div>
+                <Phone size={14} color={T.textMuted} style={{ cursor:'pointer' }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {activeTab === 'issues' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">Site Issues</h2>
-            <button className="text-xs bg-red-600/20 text-red-400 border border-red-800 px-2 py-1 rounded-lg flex items-center gap-1">
-              <Plus size={12}/> Raise Issue
-            </button>
+        <div>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:12 }}>
+            <h2 style={{ fontSize:13, fontWeight:800, color:T.text }}>Site Issues</h2>
+            <button style={{ background:T.dangerLight, border:`1px solid ${T.danger}`, borderRadius:40, padding:'4px 12px', fontSize:11, fontWeight:600, color:T.danger, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}><Plus size={12}/> Raise Issue</button>
           </div>
           {project.issues.map(iss => (
-            <div key={iss.id} className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-start gap-3">
-              <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                iss.priority === 'high' ? 'bg-red-500' : iss.priority === 'medium' ? 'bg-amber-500' : 'bg-slate-500'
-              }`}/>
-              <div className="flex-1">
-                <p className="text-sm text-white font-medium">{iss.desc}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{iss.id} · Raised {iss.date}</p>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className={`text-xs font-medium capitalize ${
-                  iss.priority === 'high' ? 'text-red-400' : iss.priority === 'medium' ? 'text-amber-400' : 'text-slate-400'
-                }`}>{iss.priority}</span>
-                <StatusBadge status={iss.status}/>
-              </div>
+            <div key={iss.id} style={{ ...card, padding:16, marginBottom:12, display:'flex', alignItems:'flex-start', gap:12 }}>
+              <div style={{ width:8, height:8, borderRadius:'50%', background: iss.priority==='high' ? T.danger : iss.priority==='medium' ? T.warning : T.textMuted, marginTop:6 }} />
+              <div style={{ flex:1 }}><p style={{ fontWeight:700, color:T.text }}>{iss.desc}</p><p style={{ fontSize:10, color:T.textMuted }}>{iss.id} · Raised {iss.date}</p></div>
+              <div style={{ display:'flex', gap:8, alignItems:'center' }}><span style={{ fontSize:11, fontWeight:600, color: iss.priority==='high' ? T.danger : iss.priority==='medium' ? T.warning : T.textMuted, textTransform:'capitalize' }}>{iss.priority}</span><StatusBadge status={iss.status}/></div>
             </div>
           ))}
         </div>
       )}
 
-      {/* ── DPR LOG TAB ── */}
       {activeTab === 'dpr' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">Daily Progress Reports</h2>
-            <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
-              <Plus size={13}/> New DPR
-            </button>
+        <div>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:12 }}>
+            <h2 style={{ fontSize:13, fontWeight:800, color:T.text }}>Daily Progress Reports</h2>
+            <button style={{ background:T.primary, border:'none', borderRadius:40, padding:'4px 12px', fontSize:11, fontWeight:600, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}><Plus size={12}/> New DPR</button>
           </div>
           {project.dprs.map((dpr,i) => (
-            <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="text-sm font-semibold text-white">{dpr.date}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{dpr.work}</p>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                  {dpr.weather === 'Rain' ? <CloudRain size={13}/> : <Sun size={13}/>}
-                  {dpr.weather}
-                </div>
+            <div key={i} style={{ ...card, padding:16, marginBottom:12 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:12 }}>
+                <div><p style={{ fontWeight:700, color:T.text }}>{dpr.date}</p><p style={{ fontSize:11, color:T.textMid }}>{dpr.work}</p></div>
+                <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:T.textMuted }}>{dpr.weather==='Rain' ? <CloudRain size={14}/> : <Sun size={14}/>} {dpr.weather}</div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-slate-800/50 rounded-lg p-2 text-center">
-                  <p className="text-sm font-bold text-white">{dpr.workers}</p>
-                  <p className="text-xs text-slate-500">Workers</p>
-                </div>
-                <div className="bg-slate-800/50 rounded-lg p-2 text-center">
-                  <p className={`text-sm font-bold ${dpr.issues > 0 ? 'text-red-400' : 'text-green-400'}`}>
-                    {dpr.issues}
-                  </p>
-                  <p className="text-xs text-slate-500">Issues</p>
-                </div>
-                <div className="bg-slate-800/50 rounded-lg p-2 text-center">
-                  <p className="text-sm font-bold text-blue-400">View</p>
-                  <p className="text-xs text-slate-500">Full DPR</p>
-                </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12 }}>
+                <div style={{ textAlign:'center', background:T.surfaceAlt, borderRadius:12, padding:8 }}><p style={{ fontWeight:800, color:T.text }}>{dpr.workers}</p><p style={{ fontSize:9, color:T.textMuted }}>Workers</p></div>
+                <div style={{ textAlign:'center', background:T.surfaceAlt, borderRadius:12, padding:8 }}><p style={{ fontWeight:800, color:dpr.issues>0 ? T.danger : T.positive }}>{dpr.issues}</p><p style={{ fontSize:9, color:T.textMuted }}>Issues</p></div>
+                <div style={{ textAlign:'center', background:T.surfaceAlt, borderRadius:12, padding:8 }}><p style={{ fontWeight:800, color:T.primary }}>View</p><p style={{ fontSize:9, color:T.textMuted }}>Full DPR</p></div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* ── DOCUMENTS TAB ── */}
       {activeTab === 'documents' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">Project Documents</h2>
-            <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
-              <Upload size={13}/> Upload
-            </button>
+        <div>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:12 }}>
+            <h2 style={{ fontSize:13, fontWeight:800, color:T.text }}>Project Documents</h2>
+            <button style={{ background:T.primary, border:'none', borderRadius:40, padding:'4px 12px', fontSize:11, fontWeight:600, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}><Upload size={12}/> Upload</button>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {project.documents.map((doc,i) => {
-              const typeColors = {
-                PDF:'text-red-400   bg-red-900/30',
-                DWG:'text-blue-400  bg-blue-900/30',
-                XLS:'text-green-400 bg-green-900/30',
-                ZIP:'text-amber-400 bg-amber-900/30',
-              }
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px,1fr))', gap:12 }}>
+            {project.documents.map(doc => {
+              const typeColor = { PDF:T.danger, DWG:T.primary, XLS:T.positive, ZIP:T.warning }[doc.type] || T.textMuted
               return (
-                <div key={i} className="flex items-center gap-4 p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-slate-700 transition cursor-pointer">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold ${typeColors[doc.type] || 'text-slate-400 bg-slate-800'}`}>
-                    {doc.type}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{doc.name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{doc.date} · {doc.size}</p>
-                  </div>
-                  <button className="text-slate-500 hover:text-blue-400 transition shrink-0">
-                    <Download size={16}/>
-                  </button>
+                <div key={doc.name} style={{ ...card, padding:12, display:'flex', alignItems:'center', gap:12, cursor:'pointer' }}>
+                  <div style={{ width:40, height:40, borderRadius:12, background:`${typeColor}20`, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, color:typeColor }}>{doc.type}</div>
+                  <div style={{ flex:1 }}><p style={{ fontWeight:600, color:T.text, fontSize:12 }}>{doc.name}</p><p style={{ fontSize:9, color:T.textMuted }}>{doc.date} · {doc.size}</p></div>
+                  <Download size={14} color={T.textMuted} />
                 </div>
               )
             })}
           </div>
         </div>
       )}
-
     </div>
   )
 }
@@ -1153,388 +874,127 @@ function AllProjectsView({ onSelectProject }) {
   const statuses = ['All','on-track','at-risk','delayed','completed']
 
   const filtered = projects
-    .filter(p => {
-      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
-                          p.client.toLowerCase().includes(search.toLowerCase())
-      const matchType   = typeFilter   === 'All' || p.type   === typeFilter
-      const matchStatus = statusFilter === 'All' || p.status === statusFilter
-      return matchSearch && matchType && matchStatus
-    })
-    .sort((a,b) => {
-      if (sortBy === 'name')     return a.name.localeCompare(b.name)
-      if (sortBy === 'progress') return b.progress - a.progress
-      if (sortBy === 'value')    return b.value - a.value
-      return 0
-    })
+    .filter(p => (p.name.toLowerCase().includes(search.toLowerCase()) || p.client.toLowerCase().includes(search.toLowerCase())) && (typeFilter==='All' || p.type===typeFilter) && (statusFilter==='All' || p.status===statusFilter))
+    .sort((a,b) => { if (sortBy==='name') return a.name.localeCompare(b.name); if (sortBy==='progress') return b.progress - a.progress; if (sortBy==='value') return b.value - a.value; return 0 })
 
-  // Summary stats
   const totalValue   = projects.reduce((s,p) => s + p.value, 0)
   const onTrack      = projects.filter(p => p.status === 'on-track').length
   const atRisk       = projects.filter(p => p.status === 'at-risk').length
-  // const delayed      = projects.filter(p => p.status === 'delayed').length
   const avgProgress  = Math.round(projects.reduce((s,p) => s + p.progress, 0) / projects.length)
 
   return (
-    <div className="space-y-6">
+    <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-white">All Projects</h1>
-          <p className="text-slate-400 text-sm mt-0.5">{projects.length} projects · {formatINR(totalValue)} total value</p>
-        </div>
-        <button className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1">
-          <Plus size={14}/> New Project
-        </button>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
+        <div><h1 style={{ fontSize:22, fontWeight:800, color:T.text }}>All Projects</h1><p style={{ fontSize:12, color:T.textMuted }}>{projects.length} projects · {formatINR(totalValue)} total value</p></div>
+        <button style={{ background:T.primary, border:'none', borderRadius:40, padding:'6px 14px', fontSize:12, fontWeight:600, color:'#fff', display:'flex', alignItems:'center', gap:6, cursor:'pointer' }}><Plus size={14}/> New Project</button>
       </div>
 
-      {/* Summary Banner */}
-      <div className="bg-gradient-to-r from-blue-900/40 via-purple-900/30 to-slate-900/40 border border-blue-800/40 rounded-2xl p-5">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div style={{ ...card, padding:20, background:`linear-gradient(135deg, ${T.primaryLight}, ${T.accentLight})`, border:`1px solid ${T.primary}` }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(100px,1fr))', gap:16, textAlign:'center' }}>
           {[
-            { label:'Total Projects', value:projects.length,        color:'text-white'        },
-            { label:'Total Value',    value:formatINR(totalValue),   color:'text-blue-300'     },
-            { label:'On Track',       value:onTrack,                 color:'text-green-400'    },
-            { label:'At Risk',        value:atRisk,                  color:'text-amber-400'    },
-            { label:'Avg Progress',   value:`${avgProgress}%`,       color:'text-purple-400'   },
-          ].map((s,i) => (
-            <div key={i} className="text-center">
-              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>
-            </div>
+            { label:'Total Projects', value:projects.length, color:T.text },
+            { label:'Total Value',    value:formatINR(totalValue), color:T.primary },
+            { label:'On Track',       value:onTrack, color:T.positive },
+            { label:'At Risk',        value:atRisk, color:T.warning },
+            { label:'Avg Progress',   value:`${avgProgress}%`, color:T.accent },
+          ].map(s => (
+            <div key={s.label}><p style={{ fontSize:24, fontWeight:800, color:s.color }}>{s.value}</p><p style={{ fontSize:10, color:T.textMuted }}>{s.label}</p></div>
           ))}
         </div>
-
-        {/* Overall progress bar */}
-        <div className="mt-4">
-          <div className="flex justify-between text-xs mb-1.5">
-            <span className="text-slate-400">Portfolio Average Progress</span>
-            <span className="text-white font-bold">{avgProgress}%</span>
-          </div>
-          <div className="h-2 bg-slate-800/60 rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all"
-              style={{ width:`${avgProgress}%` }}
-            />
-          </div>
+        <div style={{ marginTop:16 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, marginBottom:4 }}><span style={{ color:T.textMuted }}>Portfolio Average Progress</span><span style={{ fontWeight:800, color:T.text }}>{avgProgress}%</span></div>
+          <div style={{ height:6, background:T.border, borderRadius:4, overflow:'hidden' }}><div style={{ width:`${avgProgress}%`, height:'100%', background:`linear-gradient(90deg, ${T.primary}, ${T.accent})`, borderRadius:4, boxShadow:'0 0 6px #0EA5E9' }} /></div>
         </div>
       </div>
 
-      {/* Filters + View Toggle */}
-      <div className="flex flex-wrap items-center gap-3">
-
-        {/* Search */}
-        <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 flex-1 min-w-[200px] max-w-sm">
-          <Search size={14} className="text-slate-500 shrink-0"/>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search projects or clients..."
-            className="bg-transparent text-sm text-white placeholder-slate-500 outline-none w-full"
-          />
+      <div style={{ display:'flex', flexWrap:'wrap', alignItems:'center', gap:12 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, background:T.surface, border:`1px solid ${T.border}`, borderRadius:40, padding:'4px 12px', flex:1, maxWidth:320 }}>
+          <Search size={14} color={T.textMuted}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search projects or clients..." style={{ background:'transparent', border:'none', outline:'none', color:T.text, fontSize:12, width:'100%' }} />
         </div>
-
-        {/* Type Filter */}
-        <div className="flex gap-1.5 flex-wrap">
-          {types.map(t => (
-            <button
-              key={t}
-              onClick={() => setTypeFilter(t)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                typeFilter === t
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-
-        {/* Status Filter */}
-        <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-          className="bg-slate-900 border border-slate-800 text-slate-400 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500"
-        >
-          {statuses.map(s => (
-            <option key={s} value={s}>{s === 'All' ? 'All Status' : s.replace('-',' ').replace(/\b\w/g, l => l.toUpperCase())}</option>
-          ))}
-        </select>
-
-        {/* Sort */}
-        <select
-          value={sortBy}
-          onChange={e => setSortBy(e.target.value)}
-          className="bg-slate-900 border border-slate-800 text-slate-400 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500"
-        >
-          <option value="name">Sort: Name</option>
-          <option value="progress">Sort: Progress</option>
-          <option value="value">Sort: Value</option>
-        </select>
-
-        {/* View Mode */}
-        <div className="flex gap-1 bg-slate-900 border border-slate-800 rounded-lg p-1 ml-auto">
-          {[
-            { id:'grid', icon:LayoutGrid },
-            { id:'list', icon:List       },
-            { id:'kanban', icon:Kanban   },
-          ].map(v => (
-            <button
-              key={v.id}
-              onClick={() => setViewMode(v.id)}
-              className={`p-1.5 rounded transition ${
-                viewMode === v.id ? 'bg-blue-600 text-white' : 'text-slate-500 hover:text-white'
-              }`}
-            >
-              <v.icon size={15}/>
-            </button>
-          ))}
-        </div>
+        <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>{types.map(t => <button key={t} onClick={()=>setTypeFilter(t)} style={{ padding:'4px 12px', borderRadius:40, fontSize:11, fontWeight:600, background: typeFilter===t ? T.primary : T.surfaceAlt, color: typeFilter===t ? '#fff' : T.textMid, border:`1px solid ${typeFilter===t ? T.primary : T.border}`, cursor:'pointer' }}>{t}</button>)}</div>
+        <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} style={{ background:T.surface, border:`1px solid ${T.border}`, borderRadius:40, padding:'4px 12px', fontSize:11, color:T.textMid, outline:'none' }}><option value="All">All Status</option>{statuses.slice(1).map(s => <option key={s} value={s}>{s.replace('-',' ').replace(/\b\w/g,l=>l.toUpperCase())}</option>)}</select>
+        <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{ background:T.surface, border:`1px solid ${T.border}`, borderRadius:40, padding:'4px 12px', fontSize:11, color:T.textMid, outline:'none' }}><option value="name">Sort: Name</option><option value="progress">Sort: Progress</option><option value="value">Sort: Value</option></select>
+        <div style={{ display:'flex', gap:4, background:T.surface, border:`1px solid ${T.border}`, borderRadius:40, padding:4 }}>{[{id:'grid',icon:LayoutGrid},{id:'list',icon:List},{id:'kanban',icon:Kanban}].map(v=><button key={v.id} onClick={()=>setViewMode(v.id)} style={{ padding:6, borderRadius:40, background: viewMode===v.id ? T.primary : 'transparent', color: viewMode===v.id ? '#fff' : T.textMuted, border:'none', cursor:'pointer' }}><v.icon size={14}/></button>)}</div>
       </div>
 
-      {/* ── GRID VIEW ── */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(320px,1fr))', gap:16 }}>
           {filtered.map(p => (
-            <div
-              key={p.id}
-              onClick={() => onSelectProject(p)}
-              className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-600 transition cursor-pointer group"
-            >
-              {/* Photo thumbnail */}
-              <div className="relative h-36 overflow-hidden">
-                {sitePhotos[p.id]?.[0] ? (
-                  <img
-                    src={sitePhotos[p.id][0].url}
-                    alt={p.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
-                    <Building2 size={32} className="text-white/30"/>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"/>
-
-                {/* Status badge on photo */}
-                <div className="absolute top-3 left-3">
-                  <StatusBadge status={p.status}/>
-                </div>
-                <div className="absolute top-3 right-3">
-                  <TypeBadge type={p.type}/>
-                </div>
-
-                {/* Photo count */}
-                {sitePhotos[p.id]?.length > 0 && (
-                  <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
-                    <Camera size={10}/> {sitePhotos[p.id].length}
-                  </div>
-                )}
+            <div key={p.id} onClick={()=>onSelectProject(p)} style={{ ...card, overflow:'hidden', cursor:'pointer', transition:'transform 0.2s' }} onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'} onMouseLeave={e=>e.currentTarget.style.transform='none'}>
+              <div style={{ position:'relative', height:140, overflow:'hidden' }}>
+                {sitePhotos[p.id]?.[0] ? <img src={sitePhotos[p.id][0].url} alt={p.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} /> : <div style={{ width:'100%', height:'100%', background:`linear-gradient(135deg, ${T.primary}, ${T.accent})` }} />}
+                <div style={{ position:'absolute', top:8, left:8 }}><StatusBadge status={p.status}/></div>
+                <div style={{ position:'absolute', top:8, right:8 }}><TypeBadge type={p.type}/></div>
+                {sitePhotos[p.id]?.length > 0 && <div style={{ position:'absolute', bottom:8, right:8, background:'rgba(0,0,0,0.6)', borderRadius:40, padding:'2px 8px', fontSize:10, color:'#fff' }}><Camera size={10} style={{ display:'inline', marginRight:4 }} />{sitePhotos[p.id].length}</div>}
               </div>
-
-              {/* Content */}
-              <div className="p-4">
-                <h3 className="text-sm font-semibold text-white group-hover:text-blue-400 transition mb-0.5 truncate">
-                  {p.name}
-                </h3>
-                <p className="text-xs text-slate-500 mb-3">{p.client}</p>
-
-                {/* Progress */}
-                <div className="mb-3">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-500">Progress</span>
-                    <span className="text-white font-medium">{p.progress}%</span>
-                  </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${
-                        p.status === 'delayed'  ? 'bg-gradient-to-r from-red-600   to-red-400'   :
-                        p.status === 'at-risk'  ? 'bg-gradient-to-r from-amber-600 to-amber-400' :
-                                                  'bg-gradient-to-r from-blue-600  to-indigo-400'
-                      }`}
-                      style={{ width:`${p.progress}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Meta */}
-                <div className="grid grid-cols-2 gap-y-1.5 mb-3">
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
-                    <MapPin size={10} className="text-slate-600"/> {p.site.split(',')[0]}
-                  </span>
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
-                    <Calendar size={10} className="text-slate-600"/> {p.endDate}
-                  </span>
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
-                    <Users size={10} className="text-slate-600"/> {p.team} workers
-                  </span>
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
-                    <CheckSquare size={10} className="text-slate-600"/>
-                    {p.tasks.filter(t => t.status==='done').length}/{p.tasks.length} tasks
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-                  <span className="text-sm font-bold text-white">{p.valueStr}</span>
-                  <ChevronRight size={16} className="text-slate-600 group-hover:text-blue-400 transition"/>
-                </div>
+              <div style={{ padding:16 }}>
+                <h3 style={{ fontWeight:800, color:T.text, marginBottom:4 }}>{p.name}</h3>
+                <p style={{ fontSize:11, color:T.textMuted, marginBottom:12 }}>{p.client}</p>
+                <div style={{ marginBottom:12 }}><div style={{ display:'flex', justifyContent:'space-between', fontSize:10, marginBottom:4 }}><span>Progress</span><span>{p.progress}%</span></div><div style={{ height:4, background:T.border, borderRadius:2, overflow:'hidden' }}><div style={{ width:`${p.progress}%`, height:'100%', background: p.status==='delayed' ? T.danger : p.status==='at-risk' ? T.warning : `linear-gradient(90deg, ${T.primary}, ${T.accent})`, borderRadius:2 }} /></div></div>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, fontSize:10, color:T.textMuted, marginBottom:12 }}><span><MapPin size={10} style={{ display:'inline', marginRight:4 }} />{p.site.split(',')[0]}</span><span><Calendar size={10} style={{ display:'inline', marginRight:4 }} />{p.endDate}</span><span><Users size={10} style={{ display:'inline', marginRight:4 }} />{p.team} workers</span><span><CheckSquare size={10} style={{ display:'inline', marginRight:4 }} />{p.tasks.filter(t=>t.status==='done').length}/{p.tasks.length} tasks</span></div>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', paddingTop:12, borderTop:`1px solid ${T.border}` }}><span style={{ fontWeight:800, color:T.text }}>{p.valueStr}</span><ChevronRight size={14} color={T.primary} /></div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* ── LIST VIEW ── */}
       {viewMode === 'list' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm" style={{ minWidth:'800px' }}>
-              <thead>
-                <tr className="text-xs text-slate-500 border-b border-slate-800 bg-slate-900/50">
-                  <th className="text-left px-5 py-3 font-medium">Project</th>
-                  <th className="text-left px-5 py-3 font-medium">Client</th>
-                  <th className="text-left px-5 py-3 font-medium">Type</th>
-                  <th className="text-left px-5 py-3 font-medium">Value</th>
-                  <th className="text-left px-5 py-3 font-medium">Progress</th>
-                  <th className="text-left px-5 py-3 font-medium">Team</th>
-                  <th className="text-left px-5 py-3 font-medium">Deadline</th>
-                  <th className="text-left px-5 py-3 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {filtered.map(p => (
-                  <tr
-                    key={p.id}
-                    onClick={() => onSelectProject(p)}
-                    className="hover:bg-slate-800/50 transition cursor-pointer"
-                  >
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-3">
-                        {sitePhotos[p.id]?.[0] ? (
-                          <img
-                            src={sitePhotos[p.id][0].url}
-                            alt=""
-                            className="w-9 h-9 rounded-lg object-cover shrink-0"
-                          />
-                        ) : (
-                          <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
-                            <Building2 size={16} className="text-slate-500"/>
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-sm font-medium text-white">{p.name}</p>
-                          <p className="text-xs text-slate-500">{p.id}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{p.client}</td>
-                    <td className="px-5 py-3"><TypeBadge type={p.type}/></td>
-                    <td className="px-5 py-3 text-white font-medium">{p.valueStr}</td>
-                    <td className="px-5 py-3 w-36">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${
-                              p.status === 'delayed' ? 'bg-red-500' : p.status === 'at-risk' ? 'bg-amber-500' : 'bg-blue-500'
-                            }`}
-                            style={{ width:`${p.progress}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-slate-500 w-8 shrink-0">{p.progress}%</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{p.team}</td>
-                    <td className="px-5 py-3 text-slate-400 text-xs">{p.endDate}</td>
-                    <td className="px-5 py-3"><StatusBadge status={p.status}/></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div style={{ ...card, overflow:'auto' }}>
+          <table style={{ width:'100%', fontSize:12, minWidth:800, borderCollapse:'collapse' }}>
+            <thead><tr style={{ borderBottom:`1px solid ${T.border}`, background:T.surfaceAlt }}><th style={{ padding:'12px 16px', textAlign:'left', fontSize:10, fontWeight:600 }}>Project</th><th>Client</th><th>Type</th><th>Value</th><th>Progress</th><th>Team</th><th>Deadline</th><th>Status</th></tr></thead>
+            <tbody>{filtered.map(p => (
+              <tr key={p.id} onClick={()=>onSelectProject(p)} style={{ borderBottom:`1px solid ${T.border}`, cursor:'pointer' }} onMouseEnter={e=>e.currentTarget.style.background=T.primaryLight} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{ padding:'12px 16px' }}><div style={{ display:'flex', alignItems:'center', gap:8 }}>{sitePhotos[p.id]?.[0] ? <img src={sitePhotos[p.id][0].url} alt="" style={{ width:32, height:32, borderRadius:8, objectFit:'cover' }} /> : <Building2 size={20} color={T.textMuted} />}<div><p style={{ fontWeight:700, color:T.text }}>{p.name}</p><p style={{ fontSize:10, color:T.textMuted }}>{p.id}</p></div></div></td>
+                <td style={{ padding:'12px 16px', color:T.textMid }}>{p.client}</td>
+                <td style={{ padding:'12px 16px' }}><TypeBadge type={p.type}/></td>
+                <td style={{ padding:'12px 16px', fontWeight:700, color:T.text }}>{p.valueStr}</td>
+                <td style={{ padding:'12px 16px' }}><div style={{ display:'flex', alignItems:'center', gap:8 }}><div style={{ flex:1, height:4, background:T.border, borderRadius:2, overflow:'hidden' }}><div style={{ width:`${p.progress}%`, height:'100%', background: p.status==='delayed' ? T.danger : p.status==='at-risk' ? T.warning : T.primary, borderRadius:2 }} /></div><span style={{ fontSize:10, color:T.textMuted, width:32 }}>{p.progress}%</span></div></td>
+                <td style={{ padding:'12px 16px', color:T.textMid }}>{p.team}</td>
+                <td style={{ padding:'12px 16px', color:T.textMid }}>{p.endDate}</td>
+                <td style={{ padding:'12px 16px' }}><StatusBadge status={p.status}/></td>
+              </tr>
+            ))}</tbody>
+          </table>
         </div>
       )}
 
-      {/* ── KANBAN VIEW ── */}
       {viewMode === 'kanban' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px,1fr))', gap:16 }}>
           {[
-            { status:'on-track', label:'On Track',  color:'text-green-400', bg:'bg-green-900/10 border-green-900/30' },
-            { status:'at-risk',  label:'At Risk',   color:'text-amber-400', bg:'bg-amber-900/10 border-amber-900/30' },
-            { status:'delayed',  label:'Delayed',   color:'text-red-400',   bg:'bg-red-900/10   border-red-900/30'   },
-            { status:'completed',label:'Completed', color:'text-blue-400',  bg:'bg-blue-900/10  border-blue-900/30'  },
+            { status:'on-track', label:'On Track',  color:T.positive, bg:T.positiveLight },
+            { status:'at-risk',  label:'At Risk',   color:T.warning,  bg:T.warningLight },
+            { status:'delayed',  label:'Delayed',   color:T.danger,   bg:T.dangerLight },
+            { status:'completed',label:'Completed', color:T.primary,  bg:T.primaryLight },
           ].map(col => {
             const colProjects = filtered.filter(p => p.status === col.status)
             return (
-              <div key={col.status} className={`border rounded-2xl p-3 ${col.bg}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className={`text-xs font-semibold ${col.color}`}>{col.label}</h3>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${col.color} bg-current/10`}>
-                    {colProjects.length}
-                  </span>
-                </div>
-                <div className="space-y-2">
+              <div key={col.status} style={{ background:col.bg, border:`1px solid ${col.color}40`, borderRadius:24, padding:12 }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12 }}><h3 style={{ fontSize:12, fontWeight:800, color:col.color }}>{col.label}</h3><span style={{ background:col.color, color:'#fff', fontSize:10, fontWeight:700, padding:'0px 6px', borderRadius:40 }}>{colProjects.length}</span></div>
+                <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                   {colProjects.map(p => (
-                    <div
-                      key={p.id}
-                      onClick={() => onSelectProject(p)}
-                      className="bg-slate-900 border border-slate-800 rounded-xl p-3 cursor-pointer hover:border-slate-600 transition"
-                    >
-                      {sitePhotos[p.id]?.[0] && (
-                        <img
-                          src={sitePhotos[p.id][0].url}
-                          alt=""
-                          className="w-full h-20 object-cover rounded-lg mb-2"
-                        />
-                      )}
-                      <p className="text-xs font-semibold text-white mb-1">{p.name}</p>
-                      <p className="text-xs text-slate-500 mb-2">{p.client}</p>
-                      <div className="flex items-center justify-between">
-                        <TypeBadge type={p.type}/>
-                        <span className="text-xs text-white font-medium">{p.valueStr}</span>
-                      </div>
-                      <div className="mt-2">
-                        <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-blue-500"
-                            style={{ width:`${p.progress}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1 text-right">{p.progress}%</p>
-                      </div>
+                    <div key={p.id} onClick={()=>onSelectProject(p)} style={{ ...card, padding:12, cursor:'pointer' }}>
+                      {sitePhotos[p.id]?.[0] && <img src={sitePhotos[p.id][0].url} alt="" style={{ width:'100%', height:80, objectFit:'cover', borderRadius:12, marginBottom:8 }} />}
+                      <p style={{ fontWeight:700, color:T.text, fontSize:12 }}>{p.name}</p>
+                      <p style={{ fontSize:10, color:T.textMuted, marginBottom:8 }}>{p.client}</p>
+                      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}><TypeBadge type={p.type}/><span style={{ fontWeight:700, color:T.text }}>{p.valueStr}</span></div>
+                      <div><div style={{ height:4, background:T.border, borderRadius:2, overflow:'hidden' }}><div style={{ width:`${p.progress}%`, height:'100%', background:T.primary, borderRadius:2 }} /></div><p style={{ fontSize:9, color:T.textMuted, marginTop:4, textAlign:'right' }}>{p.progress}%</p></div>
                     </div>
                   ))}
-                  {colProjects.length === 0 && (
-                    <div className="text-center py-6 text-slate-600 text-xs">
-                      No projects
-                    </div>
-                  )}
+                  {colProjects.length===0 && <div style={{ textAlign:'center', padding:24, color:T.textMuted, fontSize:11 }}>No projects</div>}
                 </div>
               </div>
             )
           })}
         </div>
       )}
-
     </div>
   )
 }
 
-// ── Main Export ────────────────────────────────────────────
 export default function ProjectsPage() {
   const [selectedProject, setSelectedProject] = useState(null)
-  // const [view,            setView]            = useState('all')
-
-  if (selectedProject) {
-    return (
-      <ProjectDetail
-        project={selectedProject}
-        onBack={() => setSelectedProject(null)}
-      />
-    )
-  }
-
-  return (
-    <AllProjectsView onSelectProject={setSelectedProject}/>
-  )
+  if (selectedProject) return <ProjectDetail project={selectedProject} onBack={() => setSelectedProject(null)} />
+  return <AllProjectsView onSelectProject={setSelectedProject} />
 }

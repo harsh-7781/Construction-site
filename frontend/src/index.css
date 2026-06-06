@@ -74,6 +74,11 @@ textarea {
   gap: 1rem;
 }
 
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(15px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 .responsive-grid-4 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -90,3 +95,5 @@ textarea {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+

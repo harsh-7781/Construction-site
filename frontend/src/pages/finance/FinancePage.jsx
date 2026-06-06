@@ -110,8 +110,8 @@ const CategoryColor = (cat) => {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs shadow-sm">
-      <p className="text-gray-500 mb-1">{label}</p>
+    <div className="custom-tooltip">
+      <p className="mb-1">{label}</p>
       {payload.map(p => (
         <p key={p.name} style={{ color: p.color }} className="font-medium">
           {p.name}: ₹{p.value}L
@@ -121,7 +121,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   )
 }
 
-// ── New Invoice Form ───────────────────────────────────────
+// ── New Invoice Form ── (unchanged)
 function NewInvoiceForm({ onBack }) {
   const [client,   setClient]   = useState('Oberoi Group')
   const [project,  setProject]  = useState('')
@@ -267,7 +267,7 @@ function NewInvoiceForm({ onBack }) {
   )
 }
 
-// ── Main Component ─────────────────────────────────────────
+// ── Main Component with unique CSS design ─────────────────────────
 export default function FinancePage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [view,      setView]      = useState('main')
@@ -280,12 +280,160 @@ export default function FinancePage() {
   const totalOverdue     = invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.amount, 0)
 
   return (
-    <div className="space-y-6 bg-gray-50 min-h-screen p-6">
+    <div className="finance-neon space-y-6 min-h-screen p-6">
+      <style>{`
+        .finance-neon {
+          --neon-cyan: #00f2fe;
+          --neon-blue: #4facfe;
+          --neon-pink: #ff6ec7;
+          --neon-green: #10b981;
+          --glow-cyan: 0 0 8px rgba(0, 242, 254, 0.4);
+          --glass-bg: rgba(255, 255, 255, 0.75);
+          background: radial-gradient(circle at 20% 30%, #f0f5ff, #e9eefc);
+          animation: bgPulse 8s ease-in-out infinite;
+        }
+        @keyframes bgPulse {
+          0%, 100% { background: radial-gradient(circle at 20% 30%, #f0f5ff, #e9eefc); }
+          50% { background: radial-gradient(circle at 80% 70%, #fafcff, #e0eaff); }
+        }
+        .finance-neon .bg-white,
+        .finance-neon .bg-white\\/80,
+        .finance-neon .bg-gray-50 {
+          background: var(--glass-bg) !important;
+          backdrop-filter: blur(12px) !important;
+          border: 1px solid rgba(0, 242, 254, 0.25) !important;
+          box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.05), var(--glow-cyan) !important;
+          transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
+        }
+        .finance-neon .bg-white:hover,
+        .finance-neon .bg-gray-50:hover {
+          transform: translateY(-3px) !important;
+          border-color: rgba(0, 242, 254, 0.6) !important;
+          box-shadow: 0 20px 30px -12px rgba(0, 150, 255, 0.2), 0 0 0 1px var(--neon-cyan) !important;
+        }
+        .finance-neon .rounded-xl.p-5.shadow-sm {
+          border-radius: 24px !important;
+          background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7)) !important;
+        }
+        .finance-neon .bg-blue-600,
+        .finance-neon .bg-green-600 {
+          background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue)) !important;
+          box-shadow: 0 2px 8px rgba(0, 242, 254, 0.4) !important;
+          transition: all 0.2s !important;
+        }
+        .finance-neon .bg-blue-600:hover,
+        .finance-neon .bg-green-600:hover {
+          transform: scale(1.02) !important;
+          box-shadow: 0 0 18px var(--neon-cyan), 0 0 6px var(--neon-blue) !important;
+        }
+        .finance-neon button.bg-white {
+          background: rgba(255,255,255,0.6) !important;
+          backdrop-filter: blur(8px) !important;
+          border: 1px solid rgba(0,242,254,0.3) !important;
+        }
+        .finance-neon button.bg-white:hover {
+          border-color: var(--neon-cyan) !important;
+          box-shadow: 0 0 10px rgba(0,242,254,0.3) !important;
+        }
+        .finance-neon .rounded-xl.p-1 {
+          background: rgba(255,255,255,0.5) !important;
+          backdrop-filter: blur(12px) !important;
+          border: 1px solid rgba(0,242,254,0.2) !important;
+        }
+        .finance-neon .bg-blue-600.text-white {
+          background: linear-gradient(100deg, var(--neon-cyan), var(--neon-blue)) !important;
+          box-shadow: 0 0 10px var(--neon-cyan) !important;
+        }
+        .finance-neon table tr:hover {
+          background: linear-gradient(90deg, rgba(0,242,254,0.05), rgba(79,172,254,0.02)) !important;
+          box-shadow: inset 0 0 10px rgba(0,242,254,0.1) !important;
+        }
+        .finance-neon .border-b,
+        .finance-neon .border-gray-200 {
+          border-color: rgba(0, 242, 254, 0.15) !important;
+        }
+        .finance-neon .bg-green-100.text-green-700 {
+          background: rgba(16, 185, 129, 0.15) !important;
+          border-color: rgba(16, 185, 129, 0.5) !important;
+          box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+        }
+        .finance-neon .bg-amber-100.text-amber-700 {
+          background: rgba(245, 158, 11, 0.15) !important;
+          border-color: rgba(245, 158, 11, 0.5) !important;
+          box-shadow: 0 0 6px rgba(245, 158, 11, 0.3);
+        }
+        .finance-neon .bg-red-100.text-red-700 {
+          background: rgba(239, 68, 68, 0.15) !important;
+          border-color: rgba(239, 68, 68, 0.5) !important;
+          box-shadow: 0 0 6px rgba(239, 68, 68, 0.3);
+          animation: pulseWarning 1.5s infinite;
+        }
+        @keyframes pulseWarning {
+          0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+          70% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+          100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+        }
+        .finance-neon .custom-tooltip {
+          background: rgba(15, 25, 45, 0.9);
+          backdrop-filter: blur(12px);
+          border-radius: 16px;
+          border: 1px solid var(--neon-cyan);
+          color: white;
+          padding: 8px 14px;
+        }
+        .finance-neon .custom-tooltip p {
+          color: #e2e8f0;
+        }
+        .finance-neon input,
+        .finance-neon select,
+        .finance-neon textarea {
+          background: rgba(255,255,255,0.9) !important;
+          border: 1px solid rgba(0,242,254,0.3) !important;
+          transition: all 0.2s !important;
+        }
+        .finance-neon input:focus,
+        .finance-neon select:focus,
+        .finance-neon textarea:focus {
+          border-color: var(--neon-cyan) !important;
+          box-shadow: 0 0 0 3px rgba(0,242,254,0.2) !important;
+          outline: none !important;
+        }
+        .finance-neon h1,
+        .finance-neon .text-xl.font-bold {
+          background: linear-gradient(120deg, #1e3a8a, #3b82f6, #00c6ff);
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent !important;
+        }
+        .finance-neon .h-1\\.5.rounded-full,
+        .finance-neon .h-2.rounded-full {
+          background: rgba(0,0,0,0.05) !important;
+        }
+        .finance-neon .bg-blue-500,
+        .finance-neon .bg-purple-500,
+        .finance-neon .bg-teal-500,
+        .finance-neon .bg-amber-500,
+        .finance-neon .bg-slate-500 {
+          background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue)) !important;
+          box-shadow: 0 0 4px var(--neon-cyan);
+        }
+        .finance-neon .bg-green-100,
+        .finance-neon .bg-red-100 {
+          background: rgba(0,242,254,0.1) !important;
+        }
+        .finance-neon > div:not(.custom-tooltip) {
+          animation: fadeSlideUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Finance</h1>
+          <h1 className="text-xl font-bold">Finance</h1>
           <p className="text-gray-500 text-sm mt-0.5">Invoices, expenses & financial reports</p>
         </div>
         <div className="flex gap-2">
@@ -558,7 +706,7 @@ export default function FinancePage() {
                     <th className="text-left px-5 py-3 font-medium">Amount</th>
                     <th className="text-left px-5 py-3 font-medium">Date</th>
                     <th className="text-left px-5 py-3 font-medium">Status</th>
-                  </tr>
+                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {expenses.map(exp => (
@@ -626,7 +774,6 @@ export default function FinancePage() {
           </div>
         </div>
       )}
-
     </div>
   )
 }

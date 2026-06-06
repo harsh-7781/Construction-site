@@ -276,6 +276,7 @@ const ServiceTag = ({ service }) => {
     Turnkey:    'bg-green-50  text-green-700',
   }
   return (
+    
     <span className={`text-xs px-2 py-0.5 rounded font-medium ${colors[service] || 'bg-gray-100 text-gray-600'}`}>
       {service}
     </span>
