@@ -13,7 +13,7 @@ import {
   ComposedChart, Legend,
 } from 'recharts'
 
-// ======================= MOCK DATA =======================
+// ======================= MOCK DATA (unchanged) =======================
 const revenueCashData = [
   { month: 'Jul', actual: 38, budget: 37, cashFlow: 8 },
   { month: 'Aug', actual: 41, budget: 39, cashFlow: 9 },
@@ -30,10 +30,10 @@ const revenueCashData = [
 ]
 
 const arAgingData = [
-  { name: '0–30 Days', value: 820, color: '#10B981' },
-  { name: '31–60 Days', value: 450, color: '#F59E0B' },
-  { name: '61–90 Days', value: 310, color: '#F97316' },
-  { name: '>90 Days', value: 240, color: '#EF4444' },
+  { name: '0–30 Days', value: 820, color: '#0AFFB3' },
+  { name: '31–60 Days', value: 450, color: '#FFB347' },
+  { name: '61–90 Days', value: 310, color: '#FF66CC' },
+  { name: '>90 Days', value: 240, color: '#FF4D6D' },
 ]
 
 const salesFunnelData = [
@@ -141,58 +141,59 @@ const earlyWarningSignals = [
   { name: 'Cash Flow Paradox', active: true, months: 2, autoAction: 'Source & Use report sent' }
 ]
 
-// ======================= MODERN DESIGN TOKENS =======================
+// ======================= LIGHT NEON DESIGN TOKENS =======================
 const T = {
-  bg: '#F8FAFC',
-  surface: '#FFFFFF',
-  surfaceAlt: '#F1F5F9',
-  border: '#E2E8F0',
-  borderStrong: '#CBD5E1',
-  text: '#0F172A',
+  // Light base with vibrant neon accents
+  bg: '#F0F4F8',
+  surface: 'rgba(255, 255, 255, 0.85)',
+  surfaceAlt: 'rgba(240, 248, 255, 0.6)',
+  border: 'rgba(0, 150, 255, 0.3)',
+  borderStrong: 'rgba(0, 150, 255, 0.5)',
+  text: '#1E293B',
   textMid: '#334155',
-  textMuted: '#64748B',
-  primary: '#2563EB',        // modern blue
-  primaryLight: '#DBEAFE',
-  accent: '#F97316',         // warm orange accent
-  accentLight: '#FFEDD5',
-  positive: '#10B981',
-  positiveLight: '#D1FAE5',
-  warning: '#F59E0B',
-  warningLight: '#FEF3C7',
-  danger: '#EF4444',
-  dangerLight: '#FEE2E2',
-  chartBlue: '#3B82F6',
-  chartOrange: '#F97316',
+  textMuted: '#5B6B8C',
+  primary: '#0EA5E9',       // bright neon blue
+  primaryLight: 'rgba(14, 165, 233, 0.1)',
+  accent: '#D946EF',        // neon magenta
+  accentLight: 'rgba(217, 70, 239, 0.1)',
+  positive: '#10B981',      // neon green
+  positiveLight: 'rgba(16, 185, 129, 0.1)',
+  warning: '#F59E0B',       // neon amber
+  warningLight: 'rgba(245, 158, 11, 0.1)',
+  danger: '#EF4444',        // neon red
+  dangerLight: 'rgba(239, 68, 68, 0.1)',
+  chartBlue: '#0EA5E9',
+  chartOrange: '#D946EF',
   chartGreen: '#10B981',
   chartAmber: '#F59E0B',
 }
 
-// Updated card style — cleaner, softer shadow, rounded corners
+// Glassmorphic card with light background and neon glow
 const card = {
   background: T.surface,
-  borderRadius: '16px',
-  boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03)',
+  backdropFilter: 'blur(12px)',
+  borderRadius: '24px',
   border: `1px solid ${T.border}`,
-  transition: 'all 0.2s ease',
+  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(14, 165, 233, 0.2) inset, 0 0 12px rgba(14, 165, 233, 0.15)',
+  transition: 'all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1)',
 }
 
-// Section title — refined typography
 const sectionTitle = {
-  fontSize: '11px',
-  fontWeight: '700',
-  letterSpacing: '0.08em',
+  fontSize: '10px',
+  fontWeight: '800',
+  letterSpacing: '0.12em',
   textTransform: 'uppercase',
-  color: T.textMuted,
+  color: T.primary,
   marginBottom: '16px',
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
+  textShadow: '0 0 2px rgba(14, 165, 233, 0.3)',
 }
 
-// Metric value style
 const metricVal = {
-  fontSize: '26px',
-  fontWeight: '700',
+  fontSize: '28px',
+  fontWeight: '800',
   color: T.text,
   lineHeight: 1.2,
   fontVariantNumeric: 'tabular-nums',
@@ -202,8 +203,8 @@ const metricVal = {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 12px', fontSize: 11, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
-      <p style={{ color: T.textMuted, marginBottom: 4, fontWeight: 600 }}>{label}</p>
+    <div style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(8px)', border: `1px solid ${T.primary}`, borderRadius: 16, padding: '8px 14px', fontSize: 11, boxShadow: '0 0 15px rgba(14, 165, 233, 0.3)' }}>
+      <p style={{ color: T.primary, marginBottom: 4, fontWeight: 700 }}>{label}</p>
       {payload.map((p, i) => p.value != null && (
         <p key={i} style={{ color: p.color, fontWeight: 600 }}>
           {p.name}: {typeof p.value === 'number' ? `₹${p.value}L` : p.value}
@@ -216,8 +217,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 const EVMTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: '8px 12px', fontSize: 11, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
-      <p style={{ color: T.textMuted, marginBottom: 4, fontWeight: 600 }}>{label}</p>
+    <div style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(8px)', border: `1px solid ${T.primary}`, borderRadius: 16, padding: '8px 14px', fontSize: 11, boxShadow: '0 0 15px rgba(14, 165, 233, 0.3)' }}>
+      <p style={{ color: T.primary, marginBottom: 4, fontWeight: 700 }}>{label}</p>
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color, fontWeight: 600 }}>{p.name}: {p.value?.toFixed(2)}</p>
       ))}
@@ -228,11 +229,11 @@ const EVMTooltip = ({ active, payload, label }) => {
 function DrillDownModal({ data, onClose }) {
   if (!data) return null
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
-      <div style={{ ...card, padding: '24px', width: '100%', maxWidth: 440, boxShadow: '0 20px 35px -12px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, animation: 'fadeIn 0.2s ease' }} onClick={onClose}>
+      <div style={{ ...card, padding: '24px', width: '100%', maxWidth: 440, background: 'rgba(255, 255, 255, 0.95)', border: `1px solid ${T.primary}`, boxShadow: '0 0 30px rgba(14, 165, 233, 0.3)' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text }}>{data.title}</h3>
-          <button onClick={onClose} style={{ background: T.surfaceAlt, border: 'none', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: T.textMuted }}><X size={14} /></button>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: T.primary }}>{data.title}</h3>
+          <button onClick={onClose} style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: T.textMuted }}><X size={14} /></button>
         </div>
         <div>
           {data.content.map((row, i) => (
@@ -242,7 +243,7 @@ function DrillDownModal({ data, onClose }) {
             </div>
           ))}
         </div>
-        <button onClick={onClose} style={{ marginTop: 20, width: '100%', padding: '10px', background: T.primary, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Close</button>
+        <button onClick={onClose} style={{ marginTop: 20, width: '100%', padding: '10px', background: T.primary, border: 'none', borderRadius: 12, color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer', boxShadow: '0 0 8px rgba(14, 165, 233, 0.5)' }}>Close</button>
       </div>
     </div>
   )
@@ -252,23 +253,23 @@ function ProjectDrillModal({ project, onClose }) {
   if (!project) return null
   const hc = project.health === 'green' ? T.positive : project.health === 'yellow' ? T.warning : T.danger
   const hbg = project.health === 'green' ? T.positiveLight : project.health === 'yellow' ? T.warningLight : T.dangerLight
-  const hl = project.health === 'green' ? 'On Track' : project.health === 'yellow' ? 'At Risk' : 'Critical'
+  const hl = project.health === 'green' ? 'ON TRACK' : project.health === 'yellow' ? 'AT RISK' : 'CRITICAL'
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
-      <div style={{ ...card, padding: '24px', width: '100%', maxWidth: 480, boxShadow: '0 20px 35px -12px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }} onClick={onClose}>
+      <div style={{ ...card, padding: '24px', width: '100%', maxWidth: 480, background: 'rgba(255, 255, 255, 0.95)', border: `1px solid ${hc}` }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: T.text }}>{project.name}</h3>
             <p style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{project.client} · {project.service}</p>
           </div>
-          <button onClick={onClose} style={{ background: T.surfaceAlt, border: 'none', borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: T.textMuted }}><X size={14} /></button>
+          <button onClick={onClose} style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: '50%', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: T.textMuted }}><X size={14} /></button>
         </div>
-        <div style={{ background: hbg, borderRadius: 8, padding: '8px 12px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: hbg, borderRadius: 12, padding: '8px 12px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: `1px solid ${hc}40` }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: hc }}>● {hl}</span>
           <span style={{ fontSize: 11, color: T.textMuted }}>{project.complete}% Complete</span>
         </div>
         <div style={{ height: 6, background: T.border, borderRadius: 3, overflow: 'hidden', marginBottom: 20 }}>
-          <div style={{ height: '100%', width: `${project.complete}%`, background: hc, borderRadius: 3 }} />
+          <div style={{ height: '100%', width: `${project.complete}%`, background: hc, borderRadius: 3, boxShadow: `0 0 6px ${hc}` }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           {[
@@ -279,13 +280,13 @@ function ProjectDrillModal({ project, onClose }) {
             { label: 'Budget Variance', value: `${project.budgetVar >= 0 ? '+' : ''}${project.budgetVar.toFixed(1)}%`, color: project.budgetVar >= 0 ? T.positive : T.danger },
             { label: 'Schedule Variance', value: `${project.schedVar > 0 ? '+' : ''}${project.schedVar} days`, color: project.schedVar <= 0 ? T.positive : T.danger },
           ].map((row, i) => (
-            <div key={i} style={{ background: T.surfaceAlt, borderRadius: 10, padding: '12px' }}>
-              <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{row.label}</p>
+            <div key={i} style={{ background: T.surfaceAlt, borderRadius: 16, padding: '12px', border: `1px solid ${T.border}` }}>
+              <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{row.label}</p>
               <p style={{ fontSize: 14, fontWeight: 700, color: row.color || T.text, marginTop: 4 }}>{row.value}</p>
             </div>
           ))}
         </div>
-        <button onClick={onClose} style={{ marginTop: 20, width: '100%', padding: '10px', background: T.primary, border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Close</button>
+        <button onClick={onClose} style={{ marginTop: 20, width: '100%', padding: '10px', background: T.primary, border: 'none', borderRadius: 12, color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer', boxShadow: '0 0 8px rgba(14, 165, 233, 0.5)' }}>Close</button>
       </div>
     </div>
   )
@@ -299,13 +300,13 @@ function NPSGauge({ score }) {
   const ny = cy - r * Math.sin(rad)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <svg viewBox="0 0 200 110" style={{ width: 200 }}>
+      <svg viewBox="0 0 200 110" style={{ width: 200, filter: 'drop-shadow(0 0 4px rgba(16, 185, 129, 0.5))' }}>
         <path d="M 30 100 A 70 70 0 0 1 100 30" fill="none" stroke={T.positive} strokeWidth="10" strokeLinecap="round" />
         <path d="M 100 30 A 70 70 0 0 1 140 44" fill="none" stroke={T.warning} strokeWidth="10" strokeLinecap="round" />
         <path d="M 140 44 A 70 70 0 0 1 170 100" fill="none" stroke={T.danger} strokeWidth="10" strokeLinecap="round" />
-        <line x1={cx} y1={cy} x2={nx} y2={ny} stroke={T.text} strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx={cx} cy={cy} r={4} fill={T.text} />
-        <text x={cx} y={cy + 22} textAnchor="middle" fill={T.text} fontSize="26" fontWeight="800">{score}</text>
+        <line x1={cx} y1={cy} x2={nx} y2={ny} stroke={T.primary} strokeWidth="3" strokeLinecap="round" />
+        <circle cx={cx} cy={cy} r={5} fill={T.primary} />
+        <text x={cx} y={cy + 22} textAnchor="middle" fill={T.primary} fontSize="26" fontWeight="800" textShadow="0 0 4px #0EA5E9">{score}</text>
       </svg>
       <p style={{ fontSize: 11, color: T.textMuted, marginTop: 4 }}>Net Promoter Score</p>
       <p style={{ fontSize: 10, color: T.textMuted, marginTop: 3 }}>Promoters 62% · Passives 30% · Detractors 8%</p>
@@ -317,17 +318,17 @@ function VitalSignCard({ title, value, sub, status, trend, icon: Icon, onClick }
   const accentMap = { green: T.positive, red: T.danger, yellow: T.warning }
   const ac = accentMap[status] || T.primary
   return (
-    <div onClick={onClick} style={{ ...card, padding: '16px', borderLeft: `4px solid ${ac}`, cursor: onClick ? 'pointer' : 'default', transition: 'all 0.2s' }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 20px -8px rgba(0,0,0,0.15)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-      onMouseLeave={e => { e.currentTarget.style.boxShadow = card.boxShadow; e.currentTarget.style.transform = 'translateY(0)' }}>
+    <div onClick={onClick} style={{ ...card, padding: '16px', borderLeft: `4px solid ${ac}`, cursor: onClick ? 'pointer' : 'default', transition: 'all 0.25s ease', animation: 'fadeSlideUp 0.4s ease-out' }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 0 18px ${ac}80`; e.currentTarget.style.borderColor = ac }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = card.boxShadow; e.currentTarget.style.borderColor = T.border }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Icon size={13} color={T.textMuted} />
-          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.textMuted }}>{title}</span>
+          <Icon size={13} color={ac} />
+          <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: T.textMuted }}>{title}</span>
         </div>
         {trend && <span style={{ fontSize: 9, color: T.textMuted }}>{trend}</span>}
       </div>
-      <p style={{ fontSize: '22px', fontWeight: 700, color: T.text }}>{value}</p>
+      <p style={{ fontSize: '24px', fontWeight: 800, color: T.text }}>{value}</p>
       <p style={{ fontSize: 10, color: T.textMuted, marginTop: 4 }}>{sub}</p>
     </div>
   )
@@ -335,7 +336,7 @@ function VitalSignCard({ title, value, sub, status, trend, icon: Icon, onClick }
 
 function SectionCard({ title, icon: Icon, children, style = {} }) {
   return (
-    <div style={{ ...card, padding: '20px', ...style }}>
+    <div style={{ ...card, padding: '20px', animation: 'fadeSlideUp 0.4s ease-out', ...style }}>
       <p style={sectionTitle}>{Icon && <Icon size={14} color={T.primary} />}{title}</p>
       {children}
     </div>
@@ -382,29 +383,53 @@ export default function CEODashboard() {
 
   const selectStyle = {
     background: T.surface,
+    backdropFilter: 'blur(8px)',
     border: `1px solid ${T.border}`,
     color: T.textMid,
     fontSize: 11,
-    borderRadius: 8,
-    padding: '6px 10px',
+    borderRadius: 40,
+    padding: '6px 14px',
     outline: 'none',
     cursor: 'pointer',
-    transition: 'border 0.15s',
+    transition: 'all 0.2s',
+    fontFamily: 'inherit',
   }
 
   return (
-    <div style={{ background: T.bg, minHeight: '100vh', padding: '24px', fontFamily: "'Inter', 'DM Sans', system-ui, sans-serif" }}>
+    <div style={{ background: `linear-gradient(135deg, #F0F4F8 0%, #E2E8F0 100%)`, minHeight: '100vh', padding: '24px', fontFamily: "'Inter', 'DM Sans', system-ui, sans-serif" }}>
+
+      <style>{`
+        @keyframes fadeSlideUp {
+          0% { opacity: 0; transform: translateY(15px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes pulseNeon {
+          0% { text-shadow: 0 0 2px #0EA5E9; }
+          50% { text-shadow: 0 0 8px #0EA5E9; }
+          100% { text-shadow: 0 0 2px #0EA5E9; }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        * { box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #E2E8F0; }
+        ::-webkit-scrollbar-thumb { background: #0EA5E9; border-radius: 10px; }
+        select:hover, button:hover { filter: brightness(0.97); }
+      `}</style>
 
       {/* ── HEADER ── */}
       <div style={{ ...card, padding: '12px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: T.positive, display: 'inline-block', boxShadow: `0 0 6px ${T.positive}` }} />
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', color: T.positive, textTransform: 'uppercase' }}>Live</span>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: T.positive, display: 'inline-block', boxShadow: `0 0 8px ${T.positive}`, animation: 'pulseNeon 1.5s infinite' }} />
+            <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', color: T.positive, textTransform: 'uppercase' }}>LIVE</span>
           </div>
           <div style={{ width: 1, height: 20, background: T.border }} />
           <div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: T.text }}>CEO Dashboard</p>
+            <p style={{ fontSize: 15, fontWeight: 800, color: T.text, letterSpacing: '-0.2px' }}>CEO Dashboard</p>
             <p style={{ fontSize: 10, color: T.textMuted }}>Harsh Devadkar · Kumbhar Construction & Developers</p>
           </div>
         </div>
@@ -430,14 +455,14 @@ export default function CEODashboard() {
             <option value="delhi">Delhi</option>
           </select>
           <div style={{ position: 'relative' }}>
-            <button onClick={() => setShowAlerts(!showAlerts)} style={{ position: 'relative', padding: '6px 12px', background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, cursor: 'pointer', fontSize: 11, color: T.textMid, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button onClick={() => setShowAlerts(!showAlerts)} style={{ position: 'relative', padding: '6px 14px', background: T.surface, backdropFilter: 'blur(8px)', border: `1px solid ${T.border}`, borderRadius: 40, cursor: 'pointer', fontSize: 11, color: T.textMid, display: 'flex', alignItems: 'center', gap: 6 }}>
               Alerts
-              <span style={{ background: T.danger, color: '#fff', fontSize: 9, fontWeight: 700, borderRadius: 20, padding: '1px 6px' }}>{alerts.length}</span>
+              <span style={{ background: T.danger, color: '#fff', fontSize: 9, fontWeight: 800, borderRadius: 40, padding: '1px 7px', boxShadow: '0 0 6px #EF4444' }}>{alerts.length}</span>
             </button>
             {showAlerts && (
-              <div style={{ position: 'absolute', right: 0, top: 40, width: 320, ...card, boxShadow: '0 10px 30px rgba(0,0,0,0.15)', zIndex: 50, borderRadius: 12, overflow: 'hidden' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: T.surfaceAlt, borderBottom: `1px solid ${T.border}` }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: T.text }}>Active Alerts</span>
+              <div style={{ position: 'absolute', right: 0, top: 40, width: 320, ...card, background: 'rgba(255, 255, 255, 0.95)', border: `1px solid ${T.warning}`, borderRadius: 20, zIndex: 50 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: `1px solid ${T.border}` }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: T.warning }}>Active Alerts</span>
                   <button onClick={() => setShowAlerts(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.textMuted }}><X size={14} /></button>
                 </div>
                 {alerts.map((a, i) => (
@@ -450,7 +475,7 @@ export default function CEODashboard() {
               </div>
             )}
           </div>
-          <button onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: 6, background: T.primary, color: '#fff', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', gap: 6, background: T.primary, color: '#fff', border: 'none', borderRadius: 40, padding: '6px 14px', fontSize: 11, fontWeight: 800, cursor: 'pointer', boxShadow: '0 0 8px rgba(14, 165, 233, 0.5)' }}>
             <RefreshCw size={12} style={{ animation: refreshing ? 'spin 0.8s linear infinite' : 'none' }} />
             Refresh
           </button>
@@ -470,15 +495,15 @@ export default function CEODashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16, marginBottom: 20 }}>
         {kpiCards.map(k => (
           <div key={k.key} onClick={() => openDrill(k.key)}
-            style={{ ...card, padding: '16px', borderTop: `3px solid ${k.up ? T.primary : T.danger}`, cursor: 'pointer', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 20px -8px rgba(0,0,0,0.15)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = card.boxShadow; e.currentTarget.style.transform = 'none' }}>
+            style={{ ...card, padding: '16px', borderTop: `3px solid ${k.up ? T.primary : T.danger}`, cursor: 'pointer', animation: 'fadeSlideUp 0.3s ease-out' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 0 20px ${k.up ? T.primary : T.danger}80` }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = card.boxShadow }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.textMuted }}>{k.label}</span>
+              <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.textMuted }}>{k.label}</span>
               <k.icon size={14} color={T.textMuted} />
             </div>
             <p style={metricVal}>{k.value}</p>
-            <p style={{ fontSize: 10, color: k.up ? T.positive : T.danger, marginTop: 5, fontWeight: 600 }}>{k.up ? '▲' : '▼'} {k.sub}</p>
+            <p style={{ fontSize: 10, color: k.up ? T.positive : T.danger, marginTop: 5, fontWeight: 700 }}>{k.up ? '▲' : '▼'} {k.sub}</p>
           </div>
         ))}
       </div>
@@ -489,19 +514,19 @@ export default function CEODashboard() {
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={revenueCashData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
               <defs>
-                <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={T.primary} stopOpacity={0.1} />
+                <linearGradient id="neonArea" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={T.primary} stopOpacity={0.2} />
                   <stop offset="95%" stopColor={T.primary} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
+              <CartesianGrid strokeDasharray="3 3" stroke={T.border} strokeOpacity={0.6} />
               <XAxis dataKey="month" tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 10, paddingTop: 10 }} formatter={v => <span style={{ color: T.textMid }}>{v}</span>} />
-              <Area type="monotone" dataKey="actual" name="Revenue Actual (₹L)" stroke={T.primary} strokeWidth={2} fill="url(#ag)" dot={{ fill: T.primary, r: 2 }} />
-              <Line type="monotone" dataKey="budget" name="Revenue Budget (₹L)" stroke={T.borderStrong} strokeWidth={1.5} strokeDasharray="5 3" dot={false} />
-              <Area type="monotone" dataKey="cashFlow" name="Cash Flow (₹L)" stroke={T.positive} strokeWidth={2} fill="none" dot={{ fill: T.positive, r: 2 }} />
+              <Area type="monotone" dataKey="actual" name="Revenue Actual (₹L)" stroke={T.primary} strokeWidth={2} fill="url(#neonArea)" dot={{ fill: T.primary, r: 3, stroke: T.primary }} />
+              <Line type="monotone" dataKey="budget" name="Revenue Budget (₹L)" stroke={T.accent} strokeWidth={1.5} strokeDasharray="5 3" dot={false} />
+              <Area type="monotone" dataKey="cashFlow" name="Cash Flow (₹L)" stroke={T.positive} strokeWidth={2} fill="none" dot={{ fill: T.positive, r: 3 }} />
             </ComposedChart>
           </ResponsiveContainer>
         </SectionCard>
@@ -510,16 +535,16 @@ export default function CEODashboard() {
           <ResponsiveContainer width="100%" height={160}>
             <PieChart>
               <Pie data={arAgingData} cx="50%" cy="50%" innerRadius={45} outerRadius={68} paddingAngle={2} dataKey="value">
-                {arAgingData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                {arAgingData.map((e, i) => <Cell key={i} fill={e.color} stroke="rgba(255,255,255,0.5)" strokeWidth={1} />)}
               </Pie>
-              <Tooltip contentStyle={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'rgba(255, 255, 255, 0.95)', border: `1px solid ${T.primary}`, borderRadius: 12, fontSize: 11 }} />
             </PieChart>
           </ResponsiveContainer>
           <div style={{ marginTop: 12 }}>
             {arAgingData.map((d, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: i < arAgingData.length - 1 ? `1px solid ${T.border}` : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, display: 'inline-block' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: 4, background: d.color, display: 'inline-block', boxShadow: `0 0 4px ${d.color}` }} />
                   <span style={{ fontSize: 11, color: T.textMuted }}>{d.name}</span>
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: T.text }}>₹{d.value}K</span>
@@ -528,7 +553,7 @@ export default function CEODashboard() {
           </div>
           <div style={{ textAlign: 'center', marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
             <p style={{ fontSize: 10, color: T.textMuted }}>Total Outstanding</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: T.danger }}>₹1.82M</p>
+            <p style={{ fontSize: 20, fontWeight: 800, color: T.danger }}>₹1.82M</p>
           </div>
         </SectionCard>
       </div>
@@ -545,9 +570,9 @@ export default function CEODashboard() {
               { l: 'Debt / Equity', v: balanceSheet.debtEquity, c: T.text },
               { l: 'Interest Coverage', v: `${balanceSheet.interestCoverage}x`, c: T.positive },
             ].map((r, i) => (
-              <div key={i} style={{ background: T.surfaceAlt, borderRadius: 12, padding: '12px' }}>
-                <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{r.l}</p>
-                <p style={{ fontSize: 16, fontWeight: 700, color: r.c, marginTop: 4 }}>{r.v}</p>
+              <div key={i} style={{ background: T.surfaceAlt, borderRadius: 18, padding: '12px', border: `1px solid ${T.border}`, backdropFilter: 'blur(4px)' }}>
+                <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{r.l}</p>
+                <p style={{ fontSize: 16, fontWeight: 800, color: r.c, marginTop: 4 }}>{r.v}</p>
               </div>
             ))}
           </div>
@@ -568,9 +593,9 @@ export default function CEODashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
             {salesFunnelData.map((s, i) => (
               <div key={i} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ width: `${s.pct}%`, maxWidth: '100%', minWidth: '50%', background: i === salesFunnelData.length - 1 ? T.positive : T.primary, borderRadius: 8, padding: '8px 0', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, cursor: 'pointer', transition: 'opacity 0.15s' }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>{s.stage}</span>
-                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)' }}>{s.value}</span>
+                <div style={{ width: `${s.pct}%`, maxWidth: '100%', minWidth: '50%', background: i === salesFunnelData.length - 1 ? `linear-gradient(90deg, ${T.positive}, ${T.chartGreen})` : `linear-gradient(90deg, ${T.primary}, ${T.accent})`, borderRadius: 40, padding: '8px 0', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: `0 0 8px ${i === salesFunnelData.length - 1 ? T.positive : T.primary}` }}>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', letterSpacing: '0.04em' }}>{s.stage}</span>
+                  <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.9)' }}>{s.value}</span>
                 </div>
                 {i < salesFunnelData.length - 1 && (
                   <p style={{ fontSize: 9, color: T.textMuted, margin: '4px 0' }}>
@@ -585,20 +610,20 @@ export default function CEODashboard() {
         <SectionCard title="Earned Value — Portfolio CPI & SPI">
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={evmData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
+              <CartesianGrid strokeDasharray="3 3" stroke={T.border} strokeOpacity={0.6} />
               <XAxis dataKey="project" tick={{ fill: T.textMuted, fontSize: 8 }} axisLine={false} tickLine={false} angle={-30} textAnchor="end" height={50} />
               <YAxis domain={[0.6, 1.2]} tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => v.toFixed(2)} />
               <Tooltip content={<EVMTooltip />} />
               <Legend wrapperStyle={{ fontSize: 10, paddingTop: 8 }} formatter={v => <span style={{ color: T.textMid }}>{v}</span>} />
-              <Bar dataKey="cpi" name="CPI" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="cpi" name="CPI" radius={[6, 6, 0, 0]}>
                 {evmData.map((e, i) => <Cell key={i} fill={e.cpi >= 1 ? T.positive : e.cpi >= 0.9 ? T.warning : T.danger} />)}
               </Bar>
-              <Bar dataKey="spi" name="SPI" radius={[4, 4, 0, 0]}>
-                {evmData.map((e, i) => <Cell key={i} fill={e.spi >= 1 ? '#34D399' : e.spi >= 0.9 ? '#FBBF24' : '#F87171'} />)}
+              <Bar dataKey="spi" name="SPI" radius={[6, 6, 0, 0]}>
+                {evmData.map((e, i) => <Cell key={i} fill={e.spi >= 1 ? T.chartGreen : e.spi >= 0.9 ? T.chartAmber : T.danger} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: 11, fontWeight: 700, paddingTop: 12, borderTop: `1px solid ${T.border}`, marginTop: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: 11, fontWeight: 800, paddingTop: 12, borderTop: `1px solid ${T.border}`, marginTop: 8 }}>
             <span>Portfolio CPI: <span style={{ color: T.warning }}>0.94</span></span>
             <span>Portfolio SPI: <span style={{ color: T.positive }}>0.97</span></span>
           </div>
@@ -607,36 +632,36 @@ export default function CEODashboard() {
 
       {/* ── PROJECT HEALTH TABLE + NPS ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 20 }}>
-        <div style={card}>
+        <div style={{ ...card, overflow: 'hidden' }}>
           <div style={{ padding: '16px 20px', borderBottom: `1px solid ${T.border}` }}>
             <p style={sectionTitle}>Active Projects — Health Dashboard</p>
           </div>
           <div style={{ overflowX: 'auto', maxHeight: 280, overflowY: 'auto' }}>
             <table style={{ width: '100%', fontSize: 11, minWidth: 640, borderCollapse: 'collapse' }}>
-              <thead style={{ position: 'sticky', top: 0, background: T.surfaceAlt }}>
+              <thead style={{ position: 'sticky', top: 0, background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(8px)' }}>
                 <tr style={{ borderBottom: `1px solid ${T.border}` }}>
                   {['Project', 'Service', '% Done', 'CPI', 'SPI', 'Budget', 'Schedule', 'Status'].map(h => (
-                    <th key={h} style={{ textAlign: 'left', padding: '10px 12px', fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.textMuted, whiteSpace: 'nowrap' }}>{h}</th>
+                    <th key={h} style={{ textAlign: 'left', padding: '10px 12px', fontSize: 9, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: T.primary }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {projectHealthData.map((p, i) => (
-                  <tr key={i} onClick={() => setProjectModal(p)} style={{ borderBottom: `1px solid ${T.border}`, cursor: 'pointer', transition: 'background 0.1s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = T.surfaceAlt}
+                  <tr key={i} onClick={() => setProjectModal(p)} style={{ borderBottom: `1px solid ${T.border}`, cursor: 'pointer', transition: 'background 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = T.primaryLight}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <td style={{ padding: '10px 12px' }}>
-                      <p style={{ fontWeight: 700, color: T.text }}>{p.name}</p>
+                      <p style={{ fontWeight: 800, color: T.text }}>{p.name}</p>
                       <p style={{ fontSize: 9, color: T.textMuted, marginTop: 1 }}>{p.pm}</p>
                     </td>
                     <td style={{ padding: '10px 12px', color: T.textMuted }}>{p.service}</td>
-                    <td style={{ padding: '10px 12px', fontWeight: 700, color: T.text }}>{p.complete}%</td>
-                    <td style={{ padding: '10px 12px', fontWeight: 700, color: p.cpi >= 1 ? T.positive : p.cpi >= 0.9 ? T.warning : T.danger }}>{p.cpi.toFixed(2)}</td>
-                    <td style={{ padding: '10px 12px', fontWeight: 700, color: p.spi >= 1 ? T.positive : p.spi >= 0.9 ? T.warning : T.danger }}>{p.spi.toFixed(2)}</td>
-                    <td style={{ padding: '10px 12px', fontWeight: 600, color: p.budgetVar >= 0 ? T.positive : T.danger }}>{p.budgetVar >= 0 ? '+' : ''}{p.budgetVar.toFixed(1)}%</td>
-                    <td style={{ padding: '10px 12px', fontWeight: 600, color: p.schedVar <= 0 ? T.positive : T.danger }}>{p.schedVar > 0 ? '+' : ''}{p.schedVar}d</td>
+                    <td style={{ padding: '10px 12px', fontWeight: 800, color: T.text }}>{p.complete}%</td>
+                    <td style={{ padding: '10px 12px', fontWeight: 800, color: p.cpi >= 1 ? T.positive : p.cpi >= 0.9 ? T.warning : T.danger }}>{p.cpi.toFixed(2)}</td>
+                    <td style={{ padding: '10px 12px', fontWeight: 800, color: p.spi >= 1 ? T.positive : p.spi >= 0.9 ? T.warning : T.danger }}>{p.spi.toFixed(2)}</td>
+                    <td style={{ padding: '10px 12px', fontWeight: 800, color: p.budgetVar >= 0 ? T.positive : T.danger }}>{p.budgetVar >= 0 ? '+' : ''}{p.budgetVar.toFixed(1)}%</td>
+                    <td style={{ padding: '10px 12px', fontWeight: 800, color: p.schedVar <= 0 ? T.positive : T.danger }}>{p.schedVar > 0 ? '+' : ''}{p.schedVar}d</td>
                     <td style={{ padding: '10px 12px' }}>
-                      <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 9, fontWeight: 700, background: p.health === 'green' ? T.positiveLight : p.health === 'yellow' ? T.warningLight : T.dangerLight, color: p.health === 'green' ? T.positive : p.health === 'yellow' ? T.warning : T.danger }}>
+                      <span style={{ padding: '2px 12px', borderRadius: 40, fontSize: 9, fontWeight: 800, background: p.health === 'green' ? T.positiveLight : p.health === 'yellow' ? T.warningLight : T.dangerLight, color: p.health === 'green' ? T.positive : p.health === 'yellow' ? T.warning : T.danger, border: `1px solid ${p.health === 'green' ? T.positive : p.health === 'yellow' ? T.warning : T.danger}40` }}>
                         {p.health === 'green' ? 'ON TRACK' : p.health === 'yellow' ? 'AT RISK' : 'CRITICAL'}
                       </span>
                     </td>
@@ -661,10 +686,10 @@ export default function CEODashboard() {
               <div key={i}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <span style={{ fontSize: 11, color: T.textMid }}>{s.stage}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: T.text }}>₹{s.value} Cr · {s.count} deals</span>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: T.text }}>₹{s.value} Cr · {s.count} deals</span>
                 </div>
                 <div style={{ height: 6, background: T.border, borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${s.pct}%`, background: T.primary, borderRadius: 4 }} />
+                  <div style={{ height: '100%', width: `${s.pct}%`, background: `linear-gradient(90deg, ${T.primary}, ${T.accent})`, borderRadius: 4, boxShadow: '0 0 4px #0EA5E9' }} />
                 </div>
               </div>
             ))}
@@ -673,21 +698,21 @@ export default function CEODashboard() {
 
         <SectionCard title="Order Book & Customer Economics" icon={Briefcase}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
-            <div style={{ background: T.surfaceAlt, borderRadius: 12, padding: '12px', textAlign: 'center' }}>
+            <div style={{ background: T.surfaceAlt, borderRadius: 18, padding: '12px', textAlign: 'center', border: `1px solid ${T.border}` }}>
               <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Order Book Cover</p>
-              <p style={{ fontSize: 22, fontWeight: 700, color: T.text, margin: '6px 0 2px' }}>{orderBookCover.coverMonths}x</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: T.text, margin: '6px 0 2px' }}>{orderBookCover.coverMonths}x</p>
               <p style={{ fontSize: 9, color: T.textMuted }}>Backlog ₹{orderBookCover.backlog}Cr</p>
             </div>
-            <div style={{ background: T.surfaceAlt, borderRadius: 12, padding: '12px', textAlign: 'center' }}>
+            <div style={{ background: T.surfaceAlt, borderRadius: 18, padding: '12px', textAlign: 'center', border: `1px solid ${T.border}` }}>
               <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>CAC / LTV Ratio</p>
-              <p style={{ fontSize: 22, fontWeight: 700, color: T.text, margin: '6px 0 2px' }}>{cacLtv.ratio}x</p>
+              <p style={{ fontSize: 22, fontWeight: 800, color: T.text, margin: '6px 0 2px' }}>{cacLtv.ratio}x</p>
               <p style={{ fontSize: 9, color: T.textMuted }}>Payback {cacLtv.paybackMonths} months</p>
             </div>
           </div>
           <div style={{ paddingTop: 10, borderTop: `1px solid ${T.border}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 11, color: T.textMuted }}>Estimation Accuracy</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: estimationAccuracy.avgVariance < 0 ? T.danger : T.positive }}>{estimationAccuracy.avgVariance}% vs budget</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: estimationAccuracy.avgVariance < 0 ? T.danger : T.positive }}>{estimationAccuracy.avgVariance}% vs budget</span>
             </div>
             <p style={{ fontSize: 9, color: T.textMuted, marginTop: 3 }}>Top: {estimationAccuracy.topEstimator} · Worst: {estimationAccuracy.worstProject}</p>
           </div>
@@ -701,13 +726,13 @@ export default function CEODashboard() {
           <StatRow label="Succession Coverage" value={`${talentRisk.successionCoverage}%`} valueColor={T.warning} />
           <div style={{ padding: '8px 0', borderBottom: `1px solid ${T.border}` }}>
             <span style={{ fontSize: 10, color: T.textMuted }}>Critical roles: </span>
-            <span style={{ fontSize: 10, fontWeight: 600, color: T.text }}>{talentRisk.criticalRoles.join(', ')}</span>
+            <span style={{ fontSize: 10, fontWeight: 800, color: T.text }}>{talentRisk.criticalRoles.join(', ')}</span>
           </div>
-          <p style={{ fontSize: 10, fontWeight: 700, color: T.textMid, marginTop: 12, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Compliance Calendar</p>
+          <p style={{ fontSize: 10, fontWeight: 800, color: T.primary, marginTop: 12, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Compliance Calendar</p>
           {complianceCalendar.map((c, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: i < complianceCalendar.length - 1 ? `1px solid ${T.border}` : 'none' }}>
               <span style={{ fontSize: 10, color: T.textMid }}>{c.item}</span>
-              <span style={{ fontSize: 10, fontWeight: 700, color: c.risk === 'High' ? T.danger : T.warning }}>Due {c.due}</span>
+              <span style={{ fontSize: 10, fontWeight: 800, color: c.risk === 'High' ? T.danger : T.warning }}>Due {c.due}</span>
             </div>
           ))}
         </SectionCard>
@@ -720,9 +745,9 @@ export default function CEODashboard() {
               { l: 'RFI Turnaround', v: `${designProductivity.rfiTurnaround} days` },
               { l: 'Rev-0 First Review', v: `${designProductivity.rev0Rate}%` },
             ].map((r, i) => (
-              <div key={i} style={{ background: T.surfaceAlt, borderRadius: 12, padding: '12px' }}>
-                <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{r.l}</p>
-                <p style={{ fontSize: 18, fontWeight: 700, color: T.text, marginTop: 4 }}>{r.v}</p>
+              <div key={i} style={{ background: T.surfaceAlt, borderRadius: 18, padding: '12px', border: `1px solid ${T.border}` }}>
+                <p style={{ fontSize: 9, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{r.l}</p>
+                <p style={{ fontSize: 18, fontWeight: 800, color: T.text, marginTop: 4 }}>{r.v}</p>
               </div>
             ))}
           </div>
@@ -735,7 +760,7 @@ export default function CEODashboard() {
           {commodityIndices.map(c => (
             <div key={c.name} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 8, alignItems: 'center', padding: '7px 0', borderBottom: `1px solid ${T.border}` }}>
               <span style={{ fontSize: 11, color: T.textMid }}>{c.name} <span style={{ fontSize: 9, color: T.textMuted }}>({c.unit})</span></span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: T.text }}>₹{c.price} <span style={{ color: c.change.includes('+') ? T.danger : T.positive, fontWeight: 700 }}>{c.change}</span></span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: T.text }}>₹{c.price} <span style={{ color: c.change.includes('+') ? T.danger : T.positive, fontWeight: 800 }}>{c.change}</span></span>
               <span style={{ fontSize: 10, color: T.textMuted }}>{c.impact > 0 ? '+' : ''}{c.impact}L</span>
             </div>
           ))}
@@ -759,15 +784,15 @@ export default function CEODashboard() {
       <div style={{ ...card, padding: '20px', marginBottom: 20 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <p style={sectionTitle}><AlertTriangle size={14} color={T.warning} /> Early Warning System — Active Signals</p>
-          <button onClick={() => setShowRiskHeatmap(!showRiskHeatmap)} style={{ fontSize: 10, color: T.primary, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+          <button onClick={() => setShowRiskHeatmap(!showRiskHeatmap)} style={{ fontSize: 10, color: T.primary, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 800 }}>
             {showRiskHeatmap ? 'Hide' : 'Show'} Details
           </button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10 }}>
           {earlyWarningSignals.map(s => (
-            <div key={s.name} style={{ background: s.active ? T.dangerLight : T.surfaceAlt, border: `1px solid ${s.active ? `${T.danger}40` : T.border}`, borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
-              <p style={{ fontSize: 10, fontWeight: 700, color: s.active ? T.danger : T.textMuted }}>{s.name}</p>
-              <p style={{ fontSize: 11, fontWeight: 700, marginTop: 4, color: s.active ? T.danger : T.positive }}>{s.active ? '● ACTIVE' : '● CLEAR'}</p>
+            <div key={s.name} style={{ background: s.active ? T.dangerLight : T.surfaceAlt, border: `1px solid ${s.active ? `${T.danger}80` : T.border}`, borderRadius: 20, padding: '10px 12px', textAlign: 'center', backdropFilter: 'blur(4px)' }}>
+              <p style={{ fontSize: 10, fontWeight: 800, color: s.active ? T.danger : T.textMuted }}>{s.name}</p>
+              <p style={{ fontSize: 11, fontWeight: 800, marginTop: 4, color: s.active ? T.danger : T.positive }}>{s.active ? '● ACTIVE' : '● CLEAR'}</p>
               {showRiskHeatmap && s.active && s.autoAction && (
                 <p style={{ fontSize: 9, color: T.textMuted, marginTop: 4 }}>{s.autoAction}</p>
               )}
@@ -783,11 +808,11 @@ export default function CEODashboard() {
             {strategicInitiatives.map((item, i) => (
               <div key={i}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: T.textMid }}>{item.name}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: T.text }}>{item.progress}%</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: T.textMid }}>{item.name}</span>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: T.text }}>{item.progress}%</span>
                 </div>
                 <div style={{ height: 8, background: T.border, borderRadius: 6, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${item.progress}%`, background: item.progress >= 80 ? T.positive : item.progress >= 50 ? T.primary : T.warning, borderRadius: 6, transition: 'width 1s ease' }} />
+                  <div style={{ height: '100%', width: `${item.progress}%`, background: `linear-gradient(90deg, ${T.primary}, ${item.progress >= 80 ? T.positive : item.progress >= 50 ? T.primary : T.warning})`, borderRadius: 6, boxShadow: '0 0 6px #0EA5E9', transition: 'width 1s ease' }} />
                 </div>
               </div>
             ))}
@@ -797,31 +822,21 @@ export default function CEODashboard() {
         <SectionCard title="Quality — Complaint Pareto">
           <ResponsiveContainer width="100%" height={200}>
             <ComposedChart data={complaintData} margin={{ top: 5, right: 30, left: -15, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
+              <CartesianGrid strokeDasharray="3 3" stroke={T.border} strokeOpacity={0.6} />
               <XAxis dataKey="category" tick={{ fill: T.textMuted, fontSize: 9 }} axisLine={false} tickLine={false} />
               <YAxis yAxisId="left" tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis yAxisId="right" orientation="right" domain={[0, 100]} tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} />
-              <Tooltip contentStyle={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: 'rgba(255, 255, 255, 0.95)', border: `1px solid ${T.primary}`, borderRadius: 12, fontSize: 11 }} />
               <Legend wrapperStyle={{ fontSize: 10, paddingTop: 8 }} formatter={v => <span style={{ color: T.textMid }}>{v}</span>} />
-              <Bar yAxisId="left" dataKey="count" name="Complaint Count" fill={T.primary} radius={[4, 4, 0, 0]} />
-              <Line yAxisId="right" type="monotone" dataKey="cum" name="Cumulative %" stroke={T.accent} strokeWidth={2} dot={{ fill: T.accent, r: 3 }} />
+              <Bar yAxisId="left" dataKey="count" name="Complaint Count" fill={T.primary} radius={[6, 6, 0, 0]} />
+              <Line yAxisId="right" type="monotone" dataKey="cum" name="Cumulative %" stroke={T.accent} strokeWidth={2} dot={{ fill: T.accent, r: 3, stroke: T.accent }} />
             </ComposedChart>
           </ResponsiveContainer>
         </SectionCard>
       </div>
 
-      {/* ── MODALS ── */}
       <DrillDownModal data={drillModal} onClose={() => setDrillModal(null)} />
       <ProjectDrillModal project={projectModal} onClose={() => setProjectModal(null)} />
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        * { box-sizing: border-box; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: ${T.bg}; }
-        ::-webkit-scrollbar-thumb { background: ${T.borderStrong}; border-radius: 3px; }
-        body { margin: 0; }
-      `}</style>
     </div>
   )
 }
